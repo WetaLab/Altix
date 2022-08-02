@@ -18,8 +18,9 @@ const client = new Discord.Client({
 module.exports = client;
 
 client.commands = new Collection();
+client.buttons = new Collection();
 
-['Events', 'Commands'].forEach(handler => {
+['Events', 'Commands', 'Buttons'].forEach(handler => {
   require(`./Handlers/${handler}`)(client);
 })
 

@@ -17,7 +17,7 @@ module.exports = {
 
         if (command.permission) {
           const member = interaction.member;
-          if (!member.permissions || member.permissions.has(command.permission)) {
+          if (!member.permissions || !member.permissions.has(command.permission)) {
             const Error = new EmbedBuilder()
               .setColor(0xFFFFFF)
               .setTitle("Whoa there cowboy!")
