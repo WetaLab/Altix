@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require('discord.js');
 module.exports = {
   name: "interactionCreate",
   /**
@@ -5,22 +6,40 @@ module.exports = {
   * @param {CommandInteraction} interaction
   **/
 
-  async execute(interaction, client){
-    if(interaction.isChatInputCommand()){
-      await interaction.deferReply({ ephemeral: false }).catch(() => {});
+  async execute(interaction, client) {
+    if (interaction.isChatInputCommand()) {
 
       const command = client.commands.get(interaction.commandName);
-      if (!command) return interaction.followUp({content: "This command no longer exists.", ephemeral: true}) && client.commands.delete(interaction.commandName);
 
-      if (command.permission) {
-        const member = interaction.member;
-        if (member.permissions.has(command.permission)) {
-          const Error = new MessageEmbed()
-          .setColor('WHITE')
-          .setTitle("Whoa there cowboy!")
-          .setDescription(`You do not have permission to run this command!`)
-          return interaction.editReply({embeds: [Error]})
+
+
+      if (command) {
+
+        if (command.permission) {
+          const member = interaction.member;
+          if (member.permissions.has(command.permission)) {
+            const Error = new EmbedBuilder()
+              .setColor(0xFFFFFF)
+              .setTitle("Whoa there cowboy!")
+              .setDescription(`You do not have permission to run this command!`)
+            return interaction.reply({ embeds: [Error], ephemeral: true })
+          }
         }
+
+        if (!command) {
+          await interaction.deferReply({ ephemeral: true }).catch(() => { });
+        }
+
+        if (command.ephemeral) {
+          await interaction.deferReply({ ephemeral: true }).catch(() => { });
+        } else {
+          console.log("penis")
+          await interaction.deferReply({ ephemeral: false }).catch(() => { });
+        }
+
+
+        if (!command) return interaction.followUp({ content: "This command no longer exists.", ephemeral: true }) && client.commands.delete(interaction.commandName);
+
       }
 
       command.execute(client, interaction);
