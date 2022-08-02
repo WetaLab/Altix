@@ -1,3 +1,10 @@
+/*
+NOTE NOTE NOTE! If no verification questions have been set
+by the server administrators, it should work like all other
+bots, giving the verified role simply by pressing the "verify"
+button.
+*/
+
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 module.exports = {
     name: "setup",
