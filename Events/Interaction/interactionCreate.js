@@ -28,13 +28,12 @@ module.exports = {
 
         if (!command) {
           await interaction.deferReply({ ephemeral: true }).catch(() => { });
-        }
-
-        if (command.ephemeral) {
-          await interaction.deferReply({ ephemeral: true }).catch(() => { });
         } else {
-          console.log("penis")
-          await interaction.deferReply({ ephemeral: false }).catch(() => { });
+          if (command.ephemeral) {
+            await interaction.deferReply({ ephemeral: true }).catch(() => { });
+          } else {
+            await interaction.deferReply({ ephemeral: false }).catch(() => { });
+          }
         }
 
 
