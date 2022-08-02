@@ -1,8 +1,8 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 module.exports = {
     name: "setup",
     description: "Create a new verification process",
-    permission: "ADMINISTRATOR",
+    permission: PermissionsBitField.Flags.Administrator,
     execute(client, interaction) {
         const Response = new EmbedBuilder()
         .setColor(0xFFFFFF)

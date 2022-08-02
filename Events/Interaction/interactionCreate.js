@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 module.exports = {
   name: "interactionCreate",
   /**
@@ -17,7 +17,7 @@ module.exports = {
 
         if (command.permission) {
           const member = interaction.member;
-          if (member.permissions.has(command.permission)) {
+          if (!member.permissions || member.permissions.has(command.permission)) {
             const Error = new EmbedBuilder()
               .setColor(0xFFFFFF)
               .setTitle("Whoa there cowboy!")

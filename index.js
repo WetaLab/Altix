@@ -1,9 +1,8 @@
 const Discord = require('discord.js');
-const { GatewayIntentBits, Partials, Routes, ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection } = require('discord.js');
+const { GatewayIntentBits, Partials, Routes, ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, PermissionsBitField} = require('discord.js');
 
 const { REST } = require("@discordjs/rest");
 const token = process.env['TOKEN'];
-
 
 
 //console.log(GatewayIntentBits)
