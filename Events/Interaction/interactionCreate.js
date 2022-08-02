@@ -13,8 +13,8 @@ module.exports = {
       if (!command) return interaction.followUp({content: "This command no longer exists.", ephemeral: true}) && client.commands.delete(interaction.commandName);
 
       if (command.permission) {
-        const author_perms = interaction.channel.permissionFor(interaction.member);
-        if (!author_perms || !author_perms.has(command.permission)) {
+        const member = interaction.member;
+        if (member.permissions.has(command.permission)) {
           const Error = new MessageEmbed()
           .setColor('WHITE')
           .setTitle("Whoa there cowboy!")
