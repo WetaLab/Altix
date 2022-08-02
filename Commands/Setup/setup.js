@@ -14,7 +14,7 @@ module.exports = {
   options: [
     {
       name: "content",
-      description: "The message that will be displayed by the bot",
+      description: "The message that will be displayed by the bot. (Use /n for new lines)",
       type: 3,
       required: true,
     },
@@ -44,11 +44,14 @@ module.exports = {
           .setLabel('Verify')
           .setStyle(ButtonStyle.Success),
       );
-
-    const Response = new EmbedBuilder()
-      .setColor(0x2F3136)
-      .setTitle(`${interaction.guild.name} Verification`)
-      .setDescription(custom_content);
+    
+    const regex_to_replace = new RegExp("/n", 'g')
+    
+    const Response = {
+      color: 0x2F3136,
+      title: `${interaction.guild.name} Verification`,
+      description: custom_content.replace(regex_to_replace, "\n")
+    }
     interaction.followUp(
       {
         embeds: [Response],
