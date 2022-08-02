@@ -6,7 +6,7 @@ module.exports = {
   **/
 
   async execute(interaction, client){
-    if(interaction.isCommand()){
+    if(interaction.isChatInputCommand()){
       await interaction.deferReply({ ephemeral: false }).catch(() => {});
 
       const command = client.commands.get(interaction.commandName);
