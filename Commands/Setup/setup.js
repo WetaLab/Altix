@@ -22,7 +22,7 @@ module.exports = {
       name: "channel",
       description: "Channel for reviewers to accept verifications",
       type: 7,
-      required: true,
+      required: false,
     },
     {
       name: 'role',
@@ -31,6 +31,7 @@ module.exports = {
       required: true,
     },
   ],
+  
   async execute(client, interaction) {
     const channel = interaction.options.getChannel("channel");
     const role = interaction.options.getRole("role");
@@ -40,7 +41,7 @@ module.exports = {
     const row = new ActionRowBuilder()
       .addComponents(
         new ButtonBuilder()
-          .setCustomId('verify-button')
+          .setCustomId('verifybutton')
           .setLabel('Verify')
           .setStyle(ButtonStyle.Success),
       );
