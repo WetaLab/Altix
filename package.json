@@ -12,7 +12,7 @@
   "dependencies": {
     "@discordjs/rest": "^1.1.0-dev.1658102994-dda2895",
     "@types/node": "^18.0.6",
-    "discord.js": "^14.0.0",
+    "discord.js": "^14.1.2",
     "node-fetch": "^3.2.6"
   }
 }
