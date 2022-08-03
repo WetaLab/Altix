@@ -40,10 +40,34 @@ module.exports = {
   ],
 
   async execute(client, interaction) {
-    const channel = interaction.options.getChannel("channel");
+    let channel = interaction.options.getChannel("channel");
+
+    if (channel == undefined) {
+      channel = {
+        id: -1,
+      };
+    }
     const role = interaction.options.getRole("role");
     const custom_content = interaction.options.getString("content");
-    console.log(custom_content);
+
+    let database_operation = 0; // 0 = Add to, 1 == update
+
+    // Check if already exists etc etc
+    let does_exist = client.database
+      .prepare(
+        `
+SELECT 
+  * 
+FROM 
+  verifysettings 
+WHERE 
+  guildid = ?
+    `
+      )
+      .get(interaction.guild.id);
+    if (does_exist !== null && does_exist !== undefined) {
+      database_operation = 1;
+    }
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -59,9 +83,38 @@ module.exports = {
       title: `${interaction.guild.name} Verification`,
       description: custom_content.replace(regex_to_replace, "\n"),
     };
-    interaction.followUp({
-      embeds: [Response],
-      components: [row],
-    });
+    let sent_reply = await interaction
+      .followUp({
+        embeds: [Response],
+        components: [row],
+      })
+      .then((sent) => {
+        // Add to database
+        if (database_operation == 0) {
+          client.database
+            .prepare(
+              `
+INSERT INTO verifysettings(guildid, questions, channel, role) 
+VALUES 
+  (?, ?, ?, ?)
+    `
+            )
+            .run(interaction.guild.id, "", channel.id, role.name);
+        } else {
+          client.database
+            .prepare(
+              `
+UPDATE 
+  verifysettings 
+SET 
+  role = ?, 
+  channel = ? 
+WHERE 
+  guildid = ?
+        `
+            )
+            .run(role.name, channel.id, interaction.guild.id);
+        }
+      });
   },
 };

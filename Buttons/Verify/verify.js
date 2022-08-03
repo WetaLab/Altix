@@ -9,10 +9,27 @@ setting commands aswell.
 
 module.exports = {
   id: "verifybutton",
-  async execute(interaction){
-    interaction.reply({
+  async execute(interaction, client) {
+    /*interaction.reply({
       content: "This is the point of which this bot would start your verification process",
       ephemeral: true
-    })
-  }
-}
+    })*/
+    let fetched_role = client.database
+      .prepare(
+        `
+SELECT 
+  * 
+FROM 
+  verifysettings 
+WHERE 
+  guildid = ?
+    `
+      )
+      .get(interaction.guild.id).role;
+
+    interaction.reply({
+      content: fetched_role,
+      ephemeral: true,
+    });
+  },
+};

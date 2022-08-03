@@ -32,8 +32,22 @@ client.buttons = new Collection();
 
 // Setup database
 const db = new SQLite("./Altix.sqlite");
-db.prepare('CREATE TABLE IF NOT EXISTS verifysettings (guildid INTEGER PRIMARY KEY, message INTEGER, questions STRING, channel INTEGER)').run()
-db.prepare('CREATE TABLE IF NOT EXISTS tickets (tickid STRING PRIMARY KEY, userid INTEGER, answers STRING)').run()
+db.prepare(
+  `
+CREATE TABLE IF NOT EXISTS verifysettings (
+  guildid INTEGER PRIMARY KEY, questions STRING, 
+  channel INTEGER, role STRING
+)
+`
+).run();
+db.prepare(
+  `
+CREATE TABLE IF NOT EXISTS tickets (
+  tickid STRING PRIMARY KEY, userid INTEGER, 
+  answers STRING, guildid INTEGER
+)
+`
+).run();
 
 client.database = db;
 
