@@ -5,7 +5,13 @@ bots, giving the verified role simply by pressing the "verify"
 button.
 */
 
-const { EmbedBuilder, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+  EmbedBuilder,
+  PermissionsBitField,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 
 module.exports = {
   name: "setup",
@@ -14,8 +20,15 @@ module.exports = {
   options: [
     {
       name: "content",
-      description: "The message that will be displayed by the bot. (Use /n for new lines)",
+      description:
+        "The message that will be displayed by the bot. (Use /n for new lines)",
       type: 3,
+      required: true,
+    },
+    {
+      name: "role",
+      description: "The role to be given once verified",
+      type: 8,
       required: true,
     },
     {
@@ -24,41 +37,31 @@ module.exports = {
       type: 7,
       required: false,
     },
-    {
-      name: 'role',
-      description: "The role to be given once verified",
-      type: 8,
-      required: true,
-    },
   ],
-  
+
   async execute(client, interaction) {
     const channel = interaction.options.getChannel("channel");
     const role = interaction.options.getRole("role");
     const custom_content = interaction.options.getString("content");
     console.log(custom_content);
 
-    const row = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId('verifybutton')
-          .setLabel('Verify')
-          .setStyle(ButtonStyle.Success),
-      );
-    
-    const regex_to_replace = new RegExp("/n", 'g')
-    
-    const Response = {
-      color: 0x2F3136,
-      title: `${interaction.guild.name} Verification`,
-      description: custom_content.replace(regex_to_replace, "\n")
-    }
-    interaction.followUp(
-      {
-        embeds: [Response],
-        components: [row],
-      }
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("verifybutton")
+        .setLabel("Verify")
+        .setStyle(ButtonStyle.Success)
     );
 
-  }
-}
+    const regex_to_replace = new RegExp("/n", "g");
+
+    const Response = {
+      color: 0x2f3136,
+      title: `${interaction.guild.name} Verification`,
+      description: custom_content.replace(regex_to_replace, "\n"),
+    };
+    interaction.followUp({
+      embeds: [Response],
+      components: [row],
+    });
+  },
+};

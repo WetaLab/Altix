@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const SQLite = require("better-sqlite3");
+
 const {
   GatewayIntentBits,
   Partials,
@@ -31,7 +32,8 @@ client.buttons = new Collection();
 
 // Setup database
 const db = new SQLite("./Altix.db");
-//db.prepare('CREATE TABLE IF NOT EXISTS debuglogs (id INTEGER PRIMARY KEY, logs TEXT)').run()
+db.prepare('CREATE TABLE IF NOT EXISTS verifysettings (guildid INTEGER PRIMARY KEY, message INTEGER, questions STRING, channel INTEGER)').run()
+db.prepare('CREATE TABLE IF NOT EXISTS tickets (tickid STRING PRIMARY KEY, userid INTEGER, answers STRING)').run()
 
 client.database = db;
 
