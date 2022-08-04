@@ -44,7 +44,8 @@ db.prepare(
   `
 CREATE TABLE IF NOT EXISTS tickets (
   tickid STRING PRIMARY KEY, userid INTEGER, 
-  answers STRING, guildid INTEGER
+  answers STRING, guildid INTEGER,
+  active BOOLEAN
 )
 `
 ).run();
