@@ -31,22 +31,13 @@ module.exports = {
       type: 8,
       required: true,
     },
-    {
-      name: "channel",
-      description: "Channel for reviewers to accept verifications",
-      type: 7,
-      required: false,
-    },
   ],
 
   async execute(client, interaction) {
-    let channel = interaction.options.getChannel("channel");
-
-    if (channel == undefined) {
-      channel = {
-        id: -1,
-      };
-    }
+    let channel;
+    channel = {
+      id: -1,
+    };
     const role = interaction.options.getRole("role");
     const custom_content = interaction.options.getString("content");
 

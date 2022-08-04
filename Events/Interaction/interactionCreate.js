@@ -27,24 +27,20 @@ module.exports = {
           }
         }
 
-        if (!command) {
+        if (command.ephemeral) {
           await interaction.deferReply({ ephemeral: true }).catch(() => {});
         } else {
-          if (command.ephemeral) {
-            await interaction.deferReply({ ephemeral: true }).catch(() => {});
-          } else {
-            await interaction.deferReply({ ephemeral: false }).catch(() => {});
-          }
+          await interaction.deferReply({ ephemeral: false }).catch(() => {});
         }
-
-        if (!command)
-          return (
-            interaction.followUp({
-              content: "This command no longer exists.",
-              ephemeral: true,
-            }) && client.commands.delete(interaction.commandName)
-          );
       }
+
+      if (!command)
+        return (
+          interaction.reply({
+            content: "This command no longer exists.",
+            ephemeral: true,
+          }) && client.commands.delete(interaction.commandName)
+        );
 
       command.execute(client, interaction);
     }

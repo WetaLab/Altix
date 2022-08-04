@@ -51,11 +51,31 @@ WHERE
       }
 
       // Check if the thread verification system is needed
+      let invalid_json = false;
+
+      /* 
+      In the case that the server has an valid question object, but it's
+      empty, we have to check that
+      */
+
+      if (server_information.questions !== "") {
+        try {
+          let JSON_data = JSON.parse(server_information.questions);
+          if (JSON_data.questions.length == 0) {
+            invalid_json = true;
+          }
+        } catch (e) {
+          invalid_json = true;
+        }
+      }
+
       if (
         server_information.channel !== -1 &&
-        server_information.questions !== ""
+        server_information.questions !== "" &&
+        invalid_json !== true
       ) {
         // Handle threads
+        
       } else {
         // Thread question system has not been setup
         let role = interaction.guild.roles.cache.find(
