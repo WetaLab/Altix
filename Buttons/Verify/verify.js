@@ -7,7 +7,26 @@ setting commands aswell.
 
 // This is called upon by the "Verify" button
 
-const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const {
+  EmbedBuilder,
+  PermissionsBitField,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
+
+// Generate random Ids for verification tickets
+const random_id = () => {
+  return Math.floor(Math.random() * 10000000000000);
+};
+
+const delete_thread_creation_message = (interaction) => {
+  interaction.channel.messages.fetch({ limit: 1 }).then((messageMappings) => {
+    let messages = Array.from(messageMappings.values());
+    let previousMessage = messages[0];
+    previousMessage.delete();
+  });
+};
 
 module.exports = {
   id: "verifybutton",
@@ -28,6 +47,13 @@ WHERE
     `
       )
       .get(interaction.guild.id);
+
+    if (!server_information) {
+      return interaction.reply({
+        content: "This verification process no longer exists",
+        ephemeral: true,
+      });
+    }
 
     // Prepare verification process
     if (
@@ -74,8 +100,88 @@ WHERE
         server_information.questions !== "" &&
         invalid_json !== true
       ) {
-        // Handle threads
-        
+        // Handle thread verification
+
+        // Check if there already is a thread for this user
+        let thread = client.database
+          .prepare(
+            `
+SELECT tickid
+FROM   tickets
+WHERE  userid = ?
+       AND guildid = ? 
+            `
+          )
+          .get(interaction.member.id, interaction.guild.id);
+
+        if (!thread) {
+          let JSON_object = {
+            answers: [],
+          };
+
+          const generated_id = random_id();
+
+          client.database
+            .prepare(
+              `
+INSERT INTO tickets(tickid, userid, answers, guildid, active) 
+VALUES 
+  (?, ?, ?, ?, ?)
+        `
+            )
+            .run(
+              generated_id,
+              interaction.member.id,
+              JSON.stringify(JSON_object),
+              interaction.guild.id,
+              0
+            );
+
+          const thread = await interaction.channel.threads
+            .create({
+              name: "Verification Thread - " + generated_id,
+              autoArchiveDuration: 60,
+              reason: "Verification Thread",
+            })
+            .then((thread) => {
+              // Delete the "someone started a new thread" message
+              setTimeout(delete_thread_creation_message, 100, interaction);
+
+              let JSON_object = JSON.parse(server_information.questions);
+              let thread_embed = new EmbedBuilder()
+                .setColor(0x2f3136)
+                .setTitle(interaction.guild.name + "'s Verification Ticket")
+                .setDescription(
+                  `Please answer the following ${JSON_object.questions.length} questions to verify yourself`
+                )
+                .setFooter({ text: `ID: ${generated_id}` });
+
+              const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId(`proceed-${generated_id}`)
+                  .setLabel("Proceed")
+                  .setStyle(ButtonStyle.Success)
+              );
+
+              thread.send({
+                embeds: [thread_embed],
+                components: [row],
+                content: interaction.member.toString(),
+              });
+
+              interaction.reply({
+                content: `A verification ticket has been created, ${thread.toString()}`,
+                ephemeral: true,
+              });
+
+              //thread.members.add(interaction);
+            });
+        } else {
+          return interaction.reply({
+            content: "You already have an open verification ticket.",
+            ephemeral: true,
+          });
+        }
       } else {
         // Thread question system has not been setup
         let role = interaction.guild.roles.cache.find(
