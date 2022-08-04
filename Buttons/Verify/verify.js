@@ -73,7 +73,7 @@ WHERE
             .setColor(0xffffff)
             .setTitle("Whoops!")
             .setDescription(
-              `Uh oh! Seems like the verified role is missing\nYou might want to tell your local admins about this!`
+              `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
             );
           return interaction.reply({ embeds: [Error], ephemeral: true });
         }
