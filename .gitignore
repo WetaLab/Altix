@@ -1,3 +1,4 @@
 *.sqlite
 node_modules/
 logs/
+settings.json
