@@ -90,7 +90,7 @@ VALUES
   (?, ?, ?, ?)
     `
             )
-            .run(interaction.guild.id, "", channel.id, role.name);
+            .run(interaction.guild.id.toString(), "", channel.id.toString(), role.name);
         } else {
           client.database
             .prepare(
@@ -104,7 +104,7 @@ WHERE
   guildid = ?
         `
             )
-            .run(role.name, channel.id, interaction.guild.id);
+            .run(role.name, channel.id.toString(), interaction.guild.id.toString());
         }
       });
   },

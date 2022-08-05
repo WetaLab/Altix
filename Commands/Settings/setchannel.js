@@ -33,7 +33,7 @@ FROM
 WHERE 
   guildid = ?`
       )
-      .get(interaction.guild.id);
+      .get(interaction.guild.id.toString());
 
     if (!database_response) {
       let Error = new EmbedBuilder()
@@ -59,8 +59,9 @@ WHERE
   guildid = ?
       `
         )
-        .run(channel.id, interaction.guild.id);
-
+        .run(channel.id.toString(), interaction.guild.id.toString());
+      console.log("Set the id to ",channel.id)
+      console.log(client.database.prepare(`SELECT * FROM verifysettings WHERE guildid = ?`).get(interaction.guild.id.toString()))
       let Response = new EmbedBuilder()
         .setColor(0xffffff)
         .setDescription(

@@ -19,10 +19,24 @@ module.exports = {
       type: 3,
       required: true,
     },
+    {
+      name: "specifics",
+      description: "Extra details about the question. (Use /n for new lines)",
+      type: 3,
+      required: false,
+    },
   ],
 
   async execute(client, interaction) {
-    const question = interaction.options.getString("question");
+    const regex_to_replace = new RegExp("/n", "g");
+
+    const question = interaction.options.getString("question").replace(regex_to_replace, "\n");
+    let specifics = interaction.options.getString("specifics")
+    if (!specifics) {
+      specifics = "";
+    }else{
+      specifics = specifics.replace(regex_to_replace, "\n");
+    }
 
     // First, we check if there is a valid review channel
     let review_channel = client.database
@@ -35,7 +49,8 @@ FROM
 WHERE 
   guildid = ?`
       )
-      .get(interaction.guild.id).channel;
+      .get(interaction.guild.id.toString()).channel;
+      review_channel = parseInt(review_channel);
 
     if (
       review_channel !== -1 &&
@@ -52,7 +67,7 @@ WHERE
   guildid = ?
     `
         )
-        .get(interaction.guild.id);
+        .get(interaction.guild.id.toString());
 
       if (server_information.questions !== "") {
         let JSON_object = JSON.parse(server_information.questions);
@@ -73,7 +88,7 @@ WHERE
   guildid = ?
       `
           )
-          .run(JSON_object, interaction.guild.id);
+          .run(JSON_object, interaction.guild.id.toString());
 
         let Response = new EmbedBuilder()
           .setColor(0xffffff)
@@ -84,13 +99,13 @@ WHERE
           embeds: [Response],
           ephemeral: true,
         });
-        
       } else {
         // Create new JSON questions object
         let JSON_object = {
           questions: [
             {
               content: question,
+              specifics: specifics,
             },
           ],
         };
@@ -107,7 +122,7 @@ WHERE
   guildid = ?
       `
           )
-          .run(JSON_object, interaction.guild.id);
+          .run(JSON_object, interaction.guild.id.toString());
 
         let Response = new EmbedBuilder()
           .setColor(0xffffff)

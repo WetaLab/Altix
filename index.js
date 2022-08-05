@@ -35,17 +35,18 @@ const db = new SQLite("./Altix.sqlite");
 db.prepare(
   `
 CREATE TABLE IF NOT EXISTS verifysettings (
-  guildid INTEGER PRIMARY KEY, questions STRING, 
-  channel INTEGER, role STRING
+  guildid BLOB PRIMARY KEY, questions STRING, 
+  channel BLOB, role STRING
 )
 `
 ).run();
 db.prepare(
   `
 CREATE TABLE IF NOT EXISTS tickets (
-  tickid STRING PRIMARY KEY, userid INTEGER, 
-  answers STRING, guildid INTEGER,
-  active BOOLEAN
+  tickid STRING PRIMARY KEY, userid BLOB, 
+  answers STRING, guildid BLOB,
+  active BOOLEAN,
+  moderatorid BLOB
 )
 `
 ).run();
