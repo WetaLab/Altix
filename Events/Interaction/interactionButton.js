@@ -1,4 +1,4 @@
-const { ButtonInteraction } = require("discord.js");
+const { ButtonInteraction, EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "interactionCreate",
@@ -23,16 +23,17 @@ module.exports = {
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
 
-    if (
+    /*if (
       Button.ownerOnly &&
       interaction.member.id !== interaction.guild.ownerId
     ) {
       const Error = new EmbedBuilder()
         .setColor(0xffffff)
         .setTitle("Hm, something isn't quite right!")
-        .setDescription(`You're not the owner of that action!`);
+        .setDescription(`You're not the owner of the server!`);
       return interaction.reply({ embeds: [Error], ephemeral: true });
-    }
+    }*/
+    // Option not needed
 
     Button.execute(interaction, client);
   },

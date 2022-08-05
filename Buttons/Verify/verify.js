@@ -46,7 +46,7 @@ WHERE
   guildid = ?
     `
       )
-      .get(interaction.guild.id);
+      .get(interaction.guild.id.toString());
 
     if (!server_information) {
       return interaction.reply({
@@ -112,10 +112,13 @@ WHERE  userid = ?
        AND guildid = ? 
             `
           )
-          .get(interaction.member.id, interaction.guild.id);
+          .get(
+            interaction.member.id.toString(),
+            interaction.guild.id.toString()
+          );
 
         if (!thread) {
-          let JSON_object = {
+          let JSON_answers = {
             answers: [],
           };
 
@@ -124,17 +127,18 @@ WHERE  userid = ?
           client.database
             .prepare(
               `
-INSERT INTO tickets(tickid, userid, answers, guildid, active) 
+INSERT INTO tickets(tickid, userid, answers, guildid, active, moderatorid) 
 VALUES 
-  (?, ?, ?, ?, ?)
+  (?, ?, ?, ?, ?, ?)
         `
             )
             .run(
               generated_id,
-              interaction.member.id,
-              JSON.stringify(JSON_object),
-              interaction.guild.id,
-              0
+              interaction.member.id.toString(),
+              JSON.stringify(JSON_answers),
+              interaction.guild.id.toString(),
+              0,
+              -1
             );
 
           const thread = await interaction.channel.threads
