@@ -11,7 +11,6 @@ module.exports = {
     if (interaction.type !== InteractionType.ModalSubmit) return;
 
     const Modal = client.modals.get(interaction.customId.split("-")[0]);
-    console.log(interaction.customId.split("-")[0]);
     if (!Modal) return;
 
     if (

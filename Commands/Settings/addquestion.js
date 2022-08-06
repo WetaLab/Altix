@@ -77,8 +77,6 @@ WHERE
           specifics: specifics,
         });
 
-        console.log(JSON_object);
-
         JSON_object = JSON.stringify(JSON_object);
         client.database
           .prepare(
