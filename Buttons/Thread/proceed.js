@@ -21,7 +21,8 @@ module.exports = {
       });
     }
 
-    if (!ticket.userid == interaction.member.id) {
+    console.log(ticket)
+    if (!(ticket.userid == interaction.member.id.toString())) {
       return interaction.reply({
         content: "You are not the owner of this ticket!",
         ephemeral: true,
