@@ -60,8 +60,7 @@ WHERE
       `
         )
         .run(channel.id.toString(), interaction.guild.id.toString());
-      console.log("Set the id to ",channel.id)
-      console.log(client.database.prepare(`SELECT * FROM verifysettings WHERE guildid = ?`).get(interaction.guild.id.toString()))
+      
       let Response = new EmbedBuilder()
         .setColor(0xffffff)
         .setDescription(
