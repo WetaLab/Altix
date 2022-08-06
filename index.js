@@ -29,6 +29,7 @@ module.exports = client;
 
 client.commands = new Collection();
 client.buttons = new Collection();
+client.modals = new Collection();
 
 // Setup database
 const db = new SQLite("./Altix.sqlite");
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS tickets (
 
 client.database = db;
 
-["Events", "Commands", "Buttons"].forEach((handler) => {
+["Events", "Commands", "Buttons", "Modals"].forEach((handler) => {
   require(`./Handlers/${handler}`)(client);
 });
 

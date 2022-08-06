@@ -192,10 +192,14 @@ WHERE
     }
 
     // Ask next question
+    let specifics = "";
+    if (question.specifics != "") {
+      specifics = `\n\`${question.specifics}\``;
+    }
     let question_embed = new EmbedBuilder()
       .setColor(0xffffff)
       .setTitle(`Question ${answers.length + 1}/${questions.length}`)
-      .setDescription("> ***" + question.content + "***");
+      .setDescription("> ***" + question.content + "***"+specifics);
 
     message.channel.send({
       embeds: [question_embed],

@@ -21,7 +21,7 @@ module.exports = {
     {
       name: "content",
       description:
-        "The message that will be displayed by the bot. (Use /n for new lines)",
+        "The message content that will be displayed by the bot. (Use /n for new lines)",
       type: 3,
       required: true,
     },
