@@ -51,7 +51,7 @@ WHERE
     if (message.author.bot) return;
     if (
       !(message.author.id == thread_information.userid) &&
-      !(message.author.id == thread_information.moderatorid) /*&&
+      !(message.author.id == parseInt(thread_information.moderatorid)) /*&&
       !message.member.hasPermission("ADMINISTRATOR")*/
     ) {
       return message.delete();
@@ -62,6 +62,15 @@ WHERE
       thread_information.moderatorid == -1
     ) {
       return message.delete();
+    }
+
+    // Ignore messages if moderator is set
+    if (thread_information.moderatorid != -1) {
+      if(message.author.id != thread_information.moderatorid && message.author.id != thread_information.userid) {
+        return message.delete().catch(() => {});
+      }else{
+        return;
+      }
     }
 
     let server_information = client.database
