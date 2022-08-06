@@ -46,7 +46,9 @@ CREATE TABLE IF NOT EXISTS tickets (
   tickid STRING PRIMARY KEY, userid BLOB, 
   answers STRING, guildid BLOB,
   active BOOLEAN,
-  moderatorid BLOB
+  moderatorid BLOB,
+  channelid BLOB,
+  threadid BLOB
 )
 `
 ).run();
