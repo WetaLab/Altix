@@ -11,6 +11,7 @@ module.exports = {
     if (!interaction.isButton()) return;
 
     const Button = client.buttons.get(interaction.customId.split("-")[0]);
+    if (!Button) return;
 
     if (
       Button.permission &&

@@ -127,9 +127,9 @@ WHERE  userid = ?
           client.database
             .prepare(
               `
-INSERT INTO tickets(tickid, userid, answers, guildid, active, moderatorid) 
+INSERT INTO tickets(tickid, userid, answers, guildid, active, moderatorid, channelid, threadid)
 VALUES 
-  (?, ?, ?, ?, ?, ?)
+  (?, ?, ?, ?, ?, ?, ?, ?)
         `
             )
             .run(
@@ -138,6 +138,8 @@ VALUES
               JSON.stringify(JSON_answers),
               interaction.guild.id.toString(),
               0,
+              -1,
+              interaction.channel.id.toString(),
               -1
             );
 
@@ -150,6 +152,9 @@ VALUES
             .then((thread) => {
               // Delete the "someone started a new thread" message
               setTimeout(delete_thread_creation_message, 100, interaction);
+
+              // Update the thread id in the database
+              client.database.prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`).run(thread.id, generated_id);
 
               let JSON_object = JSON.parse(server_information.questions);
               let thread_embed = new EmbedBuilder()
