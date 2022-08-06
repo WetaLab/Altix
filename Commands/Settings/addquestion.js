@@ -74,7 +74,10 @@ WHERE
 
         JSON_object.questions.push({
           content: question,
+          specifics: specifics,
         });
+
+        console.log(JSON_object);
 
         JSON_object = JSON.stringify(JSON_object);
         client.database

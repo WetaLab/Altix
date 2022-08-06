@@ -75,7 +75,7 @@ module.exports = {
     // Send the first question to the user, the rest will be handled by messageCreate.js
 
     let specifics = "";
-    if (server_information.specifics != "") {
+    if (questions[0].specifics != "") {
       specifics = `\n\`${questions[0].specifics}\``;
     }
 

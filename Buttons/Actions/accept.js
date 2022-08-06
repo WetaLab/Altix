@@ -21,7 +21,7 @@ module.exports = {
     let questions = JSON.parse(server_information.questions).questions;
     let answers = JSON.parse(ticket.answers).answers;
 
-    let user = client.users.cache.find(user => user.id === ticket.userid);
+    let user = client.users.cache.find((user) => user.id === ticket.userid);
 
     if (
       !interaction.guild.members.me.permissions.has(
@@ -65,9 +65,27 @@ module.exports = {
         text: `ID: ${ticket_id}`,
       });
 
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`accept-${ticket_id}`)
+        .setLabel("Accept")
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(true),
+      new ButtonBuilder()
+        .setCustomId(`reject-${ticket_id}`)
+        .setLabel("Reject")
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(true),
+      new ButtonBuilder()
+        .setCustomId(`manual-${ticket_id}`)
+        .setLabel("Ask Manual Questions")
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(true)
+    );
 
     interaction.message.edit({
       embeds: [accept_embed],
+      components: [row],
     });
 
     client.database
