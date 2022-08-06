@@ -1,5 +1,4 @@
 const { PermissionsBitField, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { text } = require("stream/consumers");
 
 module.exports = {
   id: "reject",
