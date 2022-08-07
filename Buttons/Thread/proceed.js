@@ -74,6 +74,18 @@ module.exports = {
 
     // Send the first question to the user, the rest will be handled by messageCreate.js
 
+    if(questions.length == 0) {
+      let error = new EmbedBuilder()
+        .setColor(0xffffff)
+        .setDescription("No questions have been set up for this server!")
+        .setFooter({ text: `ID: ${ticket_id}` });
+      
+      interaction.member.send({ embeds: [error] }).catch(() => {})
+      // Delete ticket
+      client.database.prepare(`DELETE FROM tickets WHERE tickid = ?`).run(ticket_id);
+      // Delete thread
+      return interaction.channel.delete();
+    }
     let specifics = "";
     if (questions[0].specifics != "") {
       specifics = `\n\`${questions[0].specifics}\``;
