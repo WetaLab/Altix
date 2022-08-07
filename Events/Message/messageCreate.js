@@ -16,6 +16,9 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
+const { writeFileSync } = require("fs");
+const { Captcha } = require("captcha-canvas");
+
 module.exports = {
   name: "messageCreate",
   /**
@@ -33,14 +36,16 @@ module.exports = {
     try {
       thread_id = thread_title.split("-")[1];
       thread_information = client.database
-        .prepare(`
+        .prepare(
+          `
 SELECT 
   * 
 FROM 
   tickets 
 WHERE 
   tickid = ?
-`)
+`
+        )
         .get(thread_id);
     } catch (error) {
       // It's not a verification thread
@@ -66,22 +71,27 @@ WHERE
 
     // Ignore messages if moderator is set
     if (thread_information.moderatorid != -1) {
-      if(message.author.id != thread_information.moderatorid && message.author.id != thread_information.userid) {
+      if (
+        message.author.id != thread_information.moderatorid &&
+        message.author.id != thread_information.userid
+      ) {
         return message.delete().catch(() => {});
-      }else{
+      } else {
         return;
       }
     }
 
     let server_information = client.database
-      .prepare(`
+      .prepare(
+        `
 SELECT 
   * 
 FROM 
   verifysettings 
 WHERE 
   guildid = ?
-`)
+`
+      )
       .get(message.guild.id.toString());
 
     let answers = JSON.parse(thread_information.answers).answers;
@@ -95,14 +105,16 @@ WHERE
     });
     let database_complient_answers = JSON.stringify({ answers: answers });
     client.database
-      .prepare(`
+      .prepare(
+        `
 UPDATE 
   tickets 
 SET 
   answers = ? 
 WHERE 
   tickid = ?
-`)
+`
+      )
       .run(database_complient_answers, thread_id);
 
     if (
@@ -110,94 +122,145 @@ WHERE
       JSON.parse(server_information.questions).questions.length
     ) {
       // Submit the answers to the verification review channel
-      client.database
-        .prepare(`
+
+      // Check if captcha is enabled
+      if (server_information.captcha == 1) {
+        // Disable talking in the thread
+        client.database
+          .prepare(
+            `
 UPDATE 
   tickets 
 SET 
   active = 0 
 WHERE 
   tickid = ?
-`)
-        .run(thread_id);
-      message.guild.channels
-        .fetch(server_information.channel)
-        .then((channel) => {
-          let review_embed = new EmbedBuilder()
-            .setColor(0xffffff)
-            .setTitle("Verification Review")
-            .setAuthor({
-              name: message.author.tag,
-              iconURL: message.author.avatarURL(),
-            })
-            // Here we add all the answers, in the format of `Question`: Answer
-            .addFields({
-              name: "Answers",
-              value: answers
-                .map(
-                  (answer, index) =>
-                    `\`${questions[index].content}:\` ${answer.content}`
-                )
-                .join("\n"),
-            })
-            .setFooter({
-              text: `ID: ${thread_id}`,
-            });
+`
+          )
+          .run(thread_id);
+        // Generate captcha
+        const captcha = new Captcha();
+        captcha.async = false;
+        captcha.addDecoy(); //Add decoy text on captcha canvas.
+        captcha.drawTrace(); //draw trace lines on captcha canvas.
+        captcha.drawCaptcha();
+        await writeFileSync("captcha.png", captcha.png);
 
-          const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-              .setCustomId(`accept-${thread_id}`)
-              .setLabel("Accept")
-              .setStyle(ButtonStyle.Success),
-            new ButtonBuilder()
-              .setCustomId(`reject-${thread_id}`)
-              .setLabel("Reject")
-              .setStyle(ButtonStyle.Danger),
-            new ButtonBuilder()
-              .setCustomId(`manual-${thread_id}`)
-              .setLabel("Ask Manual Questions")
-              .setStyle(ButtonStyle.Primary)
-          );
+        const embed = new EmbedBuilder()
+          .setColor(0xffa500)
+          .setTitle("Captcha")
+          .setDescription(
+            "*This server requires you to complete a captcha to verify you*"
+          )
+          .setImage("attachment://captcha.png");
 
-          channel
-            .send({ embeds: [review_embed], components: [row] })
-            .then(() => {
-              let Response = new EmbedBuilder()
-                .setColor(0xffffff)
-                .setDescription(
-                  `**Your verification has been successfully submitted for review.**`
-                )
-                .setFooter({
-                  text: `Please wait patiently for a moderator to review your verification.`,
-                });
-              message.channel.send({ embeds: [Response] });
-              message.channel.setName(`Pending - ${thread_id}`);
-            })
-            .catch((error) => {
-              console.log(error);
-              let Response = new EmbedBuilder()
-                .setColor(0xffa500)
-                .setDescription(
-                  `**There was an error submitting your verification.**`
-                )
-                .setFooter({
-                  text: `Please try again later.`,
-                });
-              message.channel.send({ embeds: [Response] });
+        // Create answer button
+        const row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`captchabutton-${captcha.text}`)
+            .setLabel("Answer")
+            .setStyle(ButtonStyle.Success)
+        );
 
-              // Delete the ticket from the database so it can be re-opened
-              client.database
-                .prepare(`
+        return message.channel.send({
+          embeds: [embed],
+          files: ["./captcha.png"],
+          components: [row],
+        });
+      } else {
+        client.database
+          .prepare(
+            `
+UPDATE 
+  tickets 
+SET 
+  active = 0 
+WHERE 
+  tickid = ?
+`
+          )
+          .run(thread_id);
+        message.guild.channels
+          .fetch(server_information.channel)
+          .then((channel) => {
+            let review_embed = new EmbedBuilder()
+              .setColor(0xffffff)
+              .setTitle("Verification Review")
+              .setAuthor({
+                name: message.author.tag,
+                iconURL: message.author.avatarURL(),
+              })
+              // Here we add all the answers, in the format of `Question`: Answer
+              .addFields({
+                name: "Answers",
+                value: answers
+                  .map(
+                    (answer, index) =>
+                      `\`${questions[index].content}:\` ${answer.content}`
+                  )
+                  .join("\n"),
+              })
+              .setFooter({
+                text: `ID: ${thread_id}`,
+              });
+
+            const row = new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId(`accept-${thread_id}`)
+                .setLabel("Accept")
+                .setStyle(ButtonStyle.Success),
+              new ButtonBuilder()
+                .setCustomId(`reject-${thread_id}`)
+                .setLabel("Reject")
+                .setStyle(ButtonStyle.Danger),
+              new ButtonBuilder()
+                .setCustomId(`manual-${thread_id}`)
+                .setLabel("Ask Manual Questions")
+                .setStyle(ButtonStyle.Primary)
+            );
+
+            channel
+              .send({ embeds: [review_embed], components: [row] })
+              .then(() => {
+                let Response = new EmbedBuilder()
+                  .setColor(0xffffff)
+                  .setDescription(
+                    `**Your verification has been successfully submitted for review.**`
+                  )
+                  .setFooter({
+                    text: `Please wait patiently for a moderator to review your verification.`,
+                  });
+                message.channel.send({ embeds: [Response] });
+                message.channel.setName(`Pending - ${thread_id}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                let Response = new EmbedBuilder()
+                  .setColor(0xffa500)
+                  .setDescription(
+                    `**There was an error submitting your verification.**`
+                  )
+                  .setFooter({
+                    text: `Please try again later.`,
+                  });
+                message.channel.send({ embeds: [Response] });
+
+                // Delete the ticket from the database so it can be re-opened
+                client.database
+                  .prepare(
+                    `
 DELETE FROM 
   tickets 
 WHERE 
   tickid = ?
-`)
-                .run(thread_id);
-              message.channel.delete();
-            });
-        });
-      return;
+`
+                  )
+                  .run(thread_id);
+                message.channel.delete();
+              });
+          });
+        return;
+      }
     }
 
     // Ask next question
@@ -208,7 +271,7 @@ WHERE
     let question_embed = new EmbedBuilder()
       .setColor(0xffffff)
       .setTitle(`Question ${answers.length + 1}/${questions.length}`)
-      .setDescription("> ***" + question.content + "***"+specifics);
+      .setDescription("> ***" + question.content + "***" + specifics);
 
     message.channel.send({
       embeds: [question_embed],
