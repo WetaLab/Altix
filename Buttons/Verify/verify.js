@@ -15,6 +15,9 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
+const { writeFileSync } = require("fs");
+const { Captcha } = require("captcha-canvas");
+
 // Generate random Ids for verification tickets
 const random_id = () => {
   return Math.floor(Math.random() * 10000000000000);
@@ -154,7 +157,9 @@ VALUES
               setTimeout(delete_thread_creation_message, 100, interaction);
 
               // Update the thread id in the database
-              client.database.prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`).run(thread.id, generated_id);
+              client.database
+                .prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`)
+                .run(thread.id, generated_id);
 
               let JSON_object = JSON.parse(server_information.questions);
               let thread_embed = new EmbedBuilder()
@@ -193,24 +198,52 @@ VALUES
         }
       } else {
         // Thread question system has not been setup
-        let role = interaction.guild.roles.cache.find(
-          (r) => r.name === server_information.role
-        );
-        if (!role || role !== undefined || role !== null) {
-          await interaction.member.roles.add(role).then(() => {
-            const Success = new EmbedBuilder()
-              .setColor(0xffffff)
-              .setDescription(`Verification was successful!`);
-            return interaction.reply({ embeds: [Success], ephemeral: true });
-          });
+
+        // Check if captcha is needed
+        if (server_information.captcha === 1) {
+          // Generate captcha
+          const captcha = new Captcha();
+          captcha.async = false;
+          captcha.addDecoy(); //Add decoy text on captcha canvas.
+          captcha.drawTrace(); //draw trace lines on captcha canvas.
+          captcha.drawCaptcha();
+          await writeFileSync("captcha.png", captcha.png);
+
+          const embed = new EmbedBuilder()
+            .setColor(0xffa500)
+            .setTitle("Captcha")
+            .setDescription("*This server requires you to complete a captcha to verify you*")
+            .setImage("attachment://captcha.png");
+
+          // Create answer button
+          const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setCustomId(`captchabutton-${captcha.text}`)
+              .setLabel("Answer")
+              .setStyle(ButtonStyle.Success)
+          );
+
+          return interaction.reply({ embeds: [embed], files: ["./captcha.png"], ephemeral: true, components: [row] });
         } else {
-          const Error = new EmbedBuilder()
-            .setColor(0xffffff)
-            .setTitle("Whoops!")
-            .setDescription(
-              `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
-            );
-          return interaction.reply({ embeds: [Error], ephemeral: true });
+          let role = interaction.guild.roles.cache.find(
+            (r) => r.name === server_information.role
+          );
+          if (!role || role !== undefined || role !== null) {
+            await interaction.member.roles.add(role).then(() => {
+              const Success = new EmbedBuilder()
+                .setColor(0xffffff)
+                .setDescription(`Verification was successful!`);
+              return interaction.reply({ embeds: [Success], ephemeral: true });
+            });
+          } else {
+            const Error = new EmbedBuilder()
+              .setColor(0xffffff)
+              .setTitle("Whoops!")
+              .setDescription(
+                `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
+              );
+            return interaction.reply({ embeds: [Error], ephemeral: true });
+          }
         }
       }
     } else {
