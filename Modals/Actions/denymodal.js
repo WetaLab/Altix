@@ -36,91 +36,96 @@ module.exports = {
     // First send the message to the user, then delete the message
     //let user = client.users.cache.find((user) => user.id === parseInt(ticket.userid));
     let user = client.users.fetch(ticket.userid).then(async (user) => {
-        if (!user) {
+      if (!user) {
         return interaction.reply({
-            content: "User no longer exists.",
-            ephemeral: true,
+          content: "User no longer exists.",
+          ephemeral: true,
         });
-        }
+      }
 
-        let reject_embed = new EmbedBuilder()
+      let reject_embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setDescription(
-            `***Verification Rejected***\nYour verification has been rejected for the following reason:\n\`${reason}\``
+          `***Verification Rejected***\nYour verification has been rejected for the following reason:\n\`${reason}\``
         )
         .setAuthor({
-            name: interaction.guild.name,
-            iconURL: interaction.guild.iconURL(),
+          name: interaction.guild.name,
+          iconURL: interaction.guild.iconURL(),
         })
         .setTimestamp();
-        await user.send({ embeds: [reject_embed] }).catch(() => {
+      await user.send({ embeds: [reject_embed] }).catch(() => {
         console.log("Failed to send message to user");
-        });
-    
+      });
 
-        // Update the embed in the review channel
+      // Update the embed in the review channel
 
-        let server_information = client.database
+      let server_information = client.database
         .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)
         .get(interaction.guild.id);
-        let questions = JSON.parse(server_information.questions).questions;
-        let answers = JSON.parse(ticket.answers).answers;
+      let questions = JSON.parse(server_information.questions).questions;
+      let answers = JSON.parse(ticket.answers).answers;
 
-        let deny_embed = new EmbedBuilder()
+      let deny_embed = new EmbedBuilder()
         .setColor(0xff0000)
         .setTitle("Verification Review")
         .setAuthor({
-            name: user.tag,
-            iconURL: user.displayAvatarURL(),
+          name: user.tag,
+          iconURL: user.displayAvatarURL(),
         })
         // Here we add all the answers, in the format of `Question`: Answer
-        .addFields({
+        .addFields(
+          {
             name: "Answers",
             value: answers
-            .map(
+              .map(
                 (answer, index) =>
-                `\`${questions[index].content}:\` ${answer.content}`
-            )
-            .join("\n"),
-        })
+                  `\`${questions[index].content}:\` ${answer.content}`
+              )
+              .join("\n"),
+          },
+          {
+            name: "Rejection Reason",
+            value: `\`${reason}\``,
+          }
+        )
         .setFooter({
-            text: `ID: ${ticket_id}`,
+          text: `ID: ${ticket_id}`,
         });
 
-        const row = new ActionRowBuilder().addComponents(
+      const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setCustomId(`accept-${ticket_id}`)
-            .setLabel("Accept")
-            .setStyle(ButtonStyle.Success)
-            .setDisabled(true),
+          .setCustomId(`accept-${ticket_id}`)
+          .setLabel("Accept")
+          .setStyle(ButtonStyle.Success)
+          .setDisabled(true),
         new ButtonBuilder()
-            .setCustomId(`reject-${ticket_id}`)
-            .setLabel("Reject")
-            .setStyle(ButtonStyle.Danger)
-            .setDisabled(true),
+          .setCustomId(`reject-${ticket_id}`)
+          .setLabel("Reject")
+          .setStyle(ButtonStyle.Danger)
+          .setDisabled(true),
         new ButtonBuilder()
-            .setCustomId(`manual-${ticket_id}`)
-            .setLabel("Ask Manual Questions")
-            .setStyle(ButtonStyle.Primary)
-            .setDisabled(true)
-        );
+          .setCustomId(`manual-${ticket_id}`)
+          .setLabel("Ask Manual Questions")
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(true)
+      );
 
-        interaction.message.edit({
+      interaction.message.edit({
         embeds: [deny_embed],
         components: [row],
-        });
-        client.database
+      });
+      client.database
         .prepare(`DELETE FROM tickets WHERE tickid = ?`)
         .run(ticket_id);
 
-        let channel = interaction.guild.channels.cache.get(ticket.channelid);
-        if (channel) {
+      let channel = interaction.guild.channels.cache.get(ticket.channelid);
+      if (channel) {
         let thread = channel.threads.cache.get(ticket.threadid);
         if (thread) {
-            thread.delete();
+          thread.delete();
         }
-        }
-        interaction.deferUpdate();
-    })
+      }
+      interaction.deferUpdate();
+    });
   },
 };

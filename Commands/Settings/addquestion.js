@@ -30,16 +30,18 @@ module.exports = {
   async execute(client, interaction) {
     const regex_to_replace = new RegExp("/n", "g");
 
-    const question = interaction.options.getString("question").replace(regex_to_replace, "\n");
-    let specifics = interaction.options.getString("specifics")
+    const question = interaction.options
+      .getString("question")
+      .replace(regex_to_replace, "\n");
+    let specifics = interaction.options.getString("specifics");
     if (!specifics) {
       specifics = "";
-    }else{
+    } else {
       specifics = specifics.replace(regex_to_replace, "\n");
     }
 
     // First, we check if there is a valid review channel
-    let review_channel = client.database
+    let rev_channel = client.database
       .prepare(
         `
 SELECT 
@@ -49,103 +51,123 @@ FROM
 WHERE 
   guildid = ?`
       )
-      .get(interaction.guild.id.toString()).channel;
-      review_channel = parseInt(review_channel);
+      .get(interaction.guild.id.toString());
+    
 
-    if (
-      review_channel !== -1 &&
-      !interaction.guild.channels.cache.get(review_channel)
-    ) {
-      let server_information = client.database
-        .prepare(
-          `
-SELECT 
-  * 
-FROM 
-  verifysettings 
-WHERE 
-  guildid = ?
-    `
-        )
-        .get(interaction.guild.id.toString());
+    if (!rev_channel.channel) {
+      let Error = new EmbedBuilder()
+        .setColor(0xffffff)
+        .setTitle("Something ain't right here!")
+        .setDescription(
+          `There is no verification setup!\n Use /setup to create one`
+        );
+      return interaction.followUp({
+        embeds: [Error],
+        ephemeral: true,
+      });
+    }
 
-      if (server_information.questions !== "") {
-        let JSON_object = JSON.parse(server_information.questions);
+    let review_channel = interaction.guild.channels
+      .fetch(rev_channel.channel)
+      .catch(() => {
+        review_channel = null;
+      })
+      .then((review_channel) => {
 
-        JSON_object.questions.push({
-          content: question,
-          specifics: specifics,
-        });
-
-        JSON_object = JSON.stringify(JSON_object);
-        client.database
+      if (
+        review_channel !== null
+      ) {
+        let server_information = client.database
           .prepare(
             `
-UPDATE 
-  verifysettings 
-SET 
-  questions = ? 
-WHERE 
-  guildid = ?
+  SELECT 
+    * 
+  FROM 
+    verifysettings 
+  WHERE 
+    guildid = ?
       `
           )
-          .run(JSON_object, interaction.guild.id.toString());
+          .get(interaction.guild.id.toString());
 
-        let Response = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setDescription(
-            `Sucessfully added new question to the verification process.`
-          );
-        return interaction.followUp({
-          embeds: [Response],
-          ephemeral: true,
-        });
+        if (server_information.questions !== "") {
+          let JSON_object = JSON.parse(server_information.questions);
+
+          JSON_object.questions.push({
+            content: question,
+            specifics: specifics,
+          });
+
+          JSON_object = JSON.stringify(JSON_object);
+          client.database
+            .prepare(
+              `
+  UPDATE 
+    verifysettings 
+  SET 
+    questions = ? 
+  WHERE 
+    guildid = ?
+        `
+            )
+            .run(JSON_object, interaction.guild.id.toString());
+
+          let Response = new EmbedBuilder()
+            .setColor(0xffffff)
+            .setDescription(
+              `Sucessfully added new question to the verification process.`
+            );
+          return interaction.followUp({
+            embeds: [Response],
+            ephemeral: true,
+          });
+        } else {
+          // Create new JSON questions object
+          let JSON_object = {
+            questions: [
+              {
+                content: question,
+                specifics: specifics,
+              },
+            ],
+          };
+          JSON_object = JSON.stringify(JSON_object);
+
+          client.database
+            .prepare(
+              `
+  UPDATE 
+    verifysettings 
+  SET 
+    questions = ? 
+  WHERE 
+    guildid = ?
+        `
+            )
+            .run(JSON_object, interaction.guild.id.toString());
+
+          let Response = new EmbedBuilder()
+            .setColor(0xffffff)
+            .setDescription(
+              `Sucessfully added new question to the verification process.`
+            );
+          return interaction.followUp({
+            embeds: [Response],
+            ephemeral: true,
+          });
+        }
       } else {
-        // Create new JSON questions object
-        let JSON_object = {
-          questions: [
-            {
-              content: question,
-              specifics: specifics,
-            },
-          ],
-        };
-        JSON_object = JSON.stringify(JSON_object);
-
-        client.database
-          .prepare(
-            `
-UPDATE 
-  verifysettings 
-SET 
-  questions = ? 
-WHERE 
-  guildid = ?
-      `
-          )
-          .run(JSON_object, interaction.guild.id.toString());
-
         let Response = new EmbedBuilder()
           .setColor(0xffffff)
+          .setTitle("Something ain't right here!")
           .setDescription(
-            `Sucessfully added new question to the verification process.`
+            `The reviewer channel is either not set, or doesn't exist!`
           );
         return interaction.followUp({
           embeds: [Response],
           ephemeral: true,
         });
       }
-    } else {
-      let Response = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(
-          `The reviewer channel is either not set, or doesn't exist!`
-        );
-      return interaction.followUp({
-        embeds: [Response],
-        ephemeral: true,
-      });
-    }
+    })
   },
 };
