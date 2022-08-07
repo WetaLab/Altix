@@ -30,6 +30,7 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(textInput);
 
     modal.addComponents(row);
-    await interaction.showModal(modal);
+    await interaction.showModal(modal).catch(() => {})
+    interaction.deferUpdate().catch(() => {});
   },
 };
