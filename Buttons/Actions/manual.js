@@ -90,10 +90,18 @@ module.exports = {
               .setStyle(ButtonStyle.Primary)
               .setDisabled(true)
           );
-          
-          interaction.message.edit({embeds: [manual_embed], components: [row]});
+
+          interaction.message.edit({
+            embeds: [manual_embed],
+            components: [row],
+          });
           thread.members.add(interaction.member.id);
-          return interaction.deferUpdate();
+          // Don't reply, it'll close the interaction
+          await interaction.deferReply({ephemeral: true});
+          interaction.followUp({
+            content: "You have been added to the thread. " + thread.toString(),
+            ephemeral: true,
+          });
         } else {
           return interaction.reply({
             content: "Thread no longer exists.",
