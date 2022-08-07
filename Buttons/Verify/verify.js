@@ -15,7 +15,7 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
-const { writeFileSync } = require("fs");
+const { writeFileSync, unlinkSync } = require("fs");
 const { Captcha } = require("captcha-canvas");
 
 // Generate random Ids for verification tickets
@@ -207,13 +207,15 @@ VALUES
           captcha.addDecoy(); //Add decoy text on captcha canvas.
           captcha.drawTrace(); //draw trace lines on captcha canvas.
           captcha.drawCaptcha();
-          await writeFileSync("captcha.png", captcha.png);
+          await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
 
           const embed = new EmbedBuilder()
             .setColor(0xffa500)
             .setTitle("Captcha")
-            .setDescription("*This server requires you to complete a captcha to verify you*")
-            .setImage("attachment://captcha.png");
+            .setDescription(
+              "*This server requires you to complete a captcha to verify yourself*"
+            )
+            .setImage(`attachment://captcha_${captcha.text}.png`);
 
           // Create answer button
           const row = new ActionRowBuilder().addComponents(
@@ -223,7 +225,17 @@ VALUES
               .setStyle(ButtonStyle.Success)
           );
 
-          return interaction.reply({ embeds: [embed], files: ["./captcha.png"], ephemeral: true, components: [row] });
+          return await interaction
+            .reply({
+              embeds: [embed],
+              files: [`./captcha_${captcha.text}.png`],
+              ephemeral: true,
+              components: [row],
+            })
+            .then(() => {
+              // Delete the captcha file
+              unlinkSync(`./captcha_${captcha.text}.png`);
+            });
         } else {
           let role = interaction.guild.roles.cache.find(
             (r) => r.name === server_information.role

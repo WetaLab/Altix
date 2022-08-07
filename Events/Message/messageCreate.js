@@ -16,7 +16,7 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
-const { writeFileSync } = require("fs");
+const { writeFileSync, unlinkSync } = require("fs");
 const { Captcha } = require("captcha-canvas");
 
 module.exports = {
@@ -144,15 +144,15 @@ WHERE
         captcha.addDecoy(); //Add decoy text on captcha canvas.
         captcha.drawTrace(); //draw trace lines on captcha canvas.
         captcha.drawCaptcha();
-        await writeFileSync("captcha.png", captcha.png);
+        await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
 
         const embed = new EmbedBuilder()
           .setColor(0xffa500)
           .setTitle("Captcha")
           .setDescription(
-            "*This server requires you to complete a captcha to verify you*"
+            "*This server requires you to complete a captcha to proceed*"
           )
-          .setImage("attachment://captcha.png");
+          .setImage(`attachment://captcha_${captcha.text}.png`);
 
         // Create answer button
         const row = new ActionRowBuilder().addComponents(
@@ -162,11 +162,16 @@ WHERE
             .setStyle(ButtonStyle.Success)
         );
 
-        return message.channel.send({
-          embeds: [embed],
-          files: ["./captcha.png"],
-          components: [row],
-        });
+        return await message.channel
+          .send({
+            embeds: [embed],
+            files: [`./captcha_${captcha.text}.png`],
+            components: [row],
+          })
+          .then(() => {
+            // Delete the captcha file
+            unlinkSync(`./captcha_${captcha.text}.png`);
+          });
       } else {
         client.database
           .prepare(
