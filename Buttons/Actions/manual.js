@@ -96,7 +96,7 @@ module.exports = {
             components: [row],
           });
           thread.members.add(interaction.member.id);
-          // Don't reply, it'll close the interaction
+
           await interaction.deferReply({ephemeral: true});
           interaction.followUp({
             content: "You have been added to the thread. " + thread.toString(),

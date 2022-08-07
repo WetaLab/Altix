@@ -36,7 +36,6 @@ module.exports = {
     // First send the message to the user, then delete the message
     //let user = client.users.cache.find((user) => user.id === parseInt(ticket.userid));
     let user = client.users.fetch(ticket.userid).then(async (user) => {
-        console.log(user)
         if (!user) {
         return interaction.reply({
             content: "User no longer exists.",
