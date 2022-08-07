@@ -74,10 +74,18 @@ module.exports = {
       if (!ticket) {
         return interaction.reply("Ticket not found");
       }
+      
       let thread_title = interaction.channel.name;
       let questions = JSON.parse(server_information.questions).questions;
       let answers = JSON.parse(ticket.answers).answers;
       let thread_id = parseInt(thread_title.split("- ")[1]);
+
+      if(thread_title.includes("Pending")) {
+        let error_embed = new EmbedBuilder()
+          .setColor(0xffffff)
+          .setDescription(`You've already completed this captcha!`);
+        return interaction.reply({ embeds: [error_embed], ephemeral: true });
+      }
       client.database
         .prepare(
           `
