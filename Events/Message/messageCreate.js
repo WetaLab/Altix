@@ -63,7 +63,7 @@ WHERE
     }
 
     if (
-      thread_information.active == 0 &&
+      thread_information.io == 0 &&
       thread_information.moderatorid == -1
     ) {
       return message.delete();
@@ -132,7 +132,7 @@ WHERE
 UPDATE 
   tickets 
 SET 
-  active = 0 
+  io = 0 
 WHERE 
   tickid = ?
 `
@@ -179,7 +179,7 @@ WHERE
 UPDATE 
   tickets 
 SET 
-  active = 0 
+  io = 0 
 WHERE 
   tickid = ?
 `
