@@ -1,4 +1,6 @@
 const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
+
 
 module.exports = {
   name: "editquestion",
@@ -30,13 +32,13 @@ module.exports = {
     const regex_to_replace = new RegExp("/n", "g");
 
     let question = interaction.options.getInteger("id");
-    const question_text = interaction.options.getString("question").replace(regex_to_replace, "\n");
+    const question_text = sanitize_string(interaction.options.getString("question").replace(regex_to_replace, "\n"));
     let specifics = interaction.options.getString("specifics");
 
     if(!specifics) {
         specifics = "";
     }else{
-        specifics = specifics.replace(regex_to_replace, "\n");
+        specifics = sanitize_string(specifics.replace(regex_to_replace, "\n"));
     }
 
     let server_information = client.database
