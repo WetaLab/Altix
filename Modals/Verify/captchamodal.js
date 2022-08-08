@@ -106,7 +106,7 @@ module.exports = {
 UPDATE 
   tickets 
 SET 
-  active = 0 
+  io = 0 
 WHERE 
   tickid = ?
 `

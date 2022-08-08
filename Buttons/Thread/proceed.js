@@ -33,7 +33,7 @@ module.exports = {
       });
     }
 
-    if (!ticket.active == 0) {
+    if (!ticket.io == 0 || !ticket.active == 0) {
       return interaction.reply({
         content: "You're already in an active session!",
         ephemeral: true,
@@ -106,9 +106,19 @@ module.exports = {
         embeds: [question_embed],
       })
       .then(() => {
+        let row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`proceed-${ticket_id}`)
+            .setLabel("Proceed")
+            .setDisabled(true)
+            .setStyle(ButtonStyle.Success)
+        );
+        interaction.message.edit({
+          components: [row],
+        }).catch(() => {});
         interaction.deferUpdate();
         client.database
-          .prepare(`UPDATE tickets SET active = 1 WHERE tickid = ?`)
+          .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
           .run(ticket_id);
       });
   },

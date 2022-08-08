@@ -46,10 +46,11 @@ db.prepare(
 CREATE TABLE IF NOT EXISTS tickets (
   tickid STRING PRIMARY KEY, userid BLOB, 
   answers STRING, guildid BLOB,
-  active BOOLEAN,
+  io BOOLEAN,
   moderatorid BLOB,
   channelid BLOB,
-  threadid BLOB
+  threadid BLOB,
+  active BOOLEAN
 )
 `
 ).run();

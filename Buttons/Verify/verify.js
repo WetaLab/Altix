@@ -130,7 +130,7 @@ WHERE  userid = ?
           client.database
             .prepare(
               `
-INSERT INTO tickets(tickid, userid, answers, guildid, active, moderatorid, channelid, threadid)
+INSERT INTO tickets(tickid, userid, answers, guildid, io, moderatorid, channelid, threadid)
 VALUES 
   (?, ?, ?, ?, ?, ?, ?, ?)
         `
