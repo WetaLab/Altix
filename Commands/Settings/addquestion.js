@@ -6,6 +6,8 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
+const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
+
 module.exports = {
   name: "addquestion",
   description: "Add a new question to an existing verification process",
@@ -30,15 +32,16 @@ module.exports = {
   async execute(client, interaction) {
     const regex_to_replace = new RegExp("/n", "g");
 
-    const question = interaction.options
-      .getString("question")
+    const question = sanitize_string(interaction.options
+      .getString("question"))
       .replace(regex_to_replace, "\n");
     let specifics = interaction.options.getString("specifics");
     if (!specifics) {
       specifics = "";
     } else {
-      specifics = specifics.replace(regex_to_replace, "\n");
+      specifics = sanitize_string(specifics.replace(regex_to_replace, "\n"));
     }
+    
 
     // First, we check if there is a valid review channel
     let rev_channel = client.database
