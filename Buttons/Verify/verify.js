@@ -165,10 +165,17 @@ VALUES
               let thread_embed = new EmbedBuilder()
                 .setColor(0x2f3136)
                 .setTitle(interaction.guild.name + "'s Verification Ticket")
-                .setDescription(
-                  `Please answer the following ${JSON_object.questions.length} questions to verify yourself`
-                )
                 .setFooter({ text: `ID: ${generated_id}` });
+
+              if (JSON_object.questions.length > 1) {
+                thread_embed.setDescription(
+                  `Please answer the following ${JSON_object.questions.length} questions to verify yourself`
+                );
+              } else {
+                thread_embed.setDescription(
+                  `Please answer the following question to verify yourself`
+                );
+              }
 
               const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
