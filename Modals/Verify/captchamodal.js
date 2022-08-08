@@ -48,6 +48,7 @@ module.exports = {
       .get(interaction.guild.id.toString());
 
     if (!is_thread_verification) {
+      
       let role = interaction.guild.roles.cache.find(
         (r) => r.name === server_information.role
       );
@@ -74,18 +75,31 @@ module.exports = {
       if (!ticket) {
         return interaction.reply("Ticket not found");
       }
-      
+
       let thread_title = interaction.channel.name;
       let questions = JSON.parse(server_information.questions).questions;
       let answers = JSON.parse(ticket.answers).answers;
       let thread_id = parseInt(thread_title.split("- ")[1]);
 
-      if(thread_title.includes("Pending")) {
+      if (thread_title.includes("Pending")) {
         let error_embed = new EmbedBuilder()
           .setColor(0xffffff)
           .setDescription(`You've already completed this captcha!`);
         return interaction.reply({ embeds: [error_embed], ephemeral: true });
       }
+
+      // Lock the component
+      let row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`captchabutton-${captcha_correct}`)
+          .setLabel("Answer")
+          .setStyle(ButtonStyle.Success)
+          .setDisabled(true)
+      );
+      interaction.message.edit({
+        components: [row],
+      }).catch(() => {});
+
       client.database
         .prepare(
           `
@@ -148,8 +162,8 @@ WHERE
                 .setFooter({
                   text: `Please wait patiently for a moderator to review your verification.`,
                 });
-                interaction.channel.send({ embeds: [Response] });
-                interaction.channel.setName(`Pending - ${thread_id}`);
+              interaction.channel.send({ embeds: [Response] });
+              interaction.channel.setName(`Pending - ${thread_id}`);
             })
             .catch((error) => {
               console.log(error);
@@ -161,7 +175,7 @@ WHERE
                 .setFooter({
                   text: `Please try again later.`,
                 });
-                interaction.member.send({ embeds: [Response] });
+              interaction.member.send({ embeds: [Response] });
 
               // Delete the ticket from the database so it can be re-opened
               client.database
@@ -174,7 +188,7 @@ WHERE
 `
                 )
                 .run(thread_id);
-                interaction.channel.delete();
+              interaction.channel.delete();
             });
         });
       return interaction.deferUpdate();
