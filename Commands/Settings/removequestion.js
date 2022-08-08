@@ -1,4 +1,6 @@
 const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const { invalidate_all_tickets } = require("../../lib/utils.js"); // Load the utils library
+
 
 module.exports = {
   name: "removequestion",
@@ -84,6 +86,7 @@ module.exports = {
           .setDescription(
             `Sucessfully removed question \`${question}\` from the verification process.`
           );
+        invalidate_all_tickets(client, interaction.guild.id, interaction.guild);
         return interaction.followUp({
           embeds: [Response],
           ephemeral: true,

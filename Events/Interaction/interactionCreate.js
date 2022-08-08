@@ -42,7 +42,17 @@ module.exports = {
           }) && client.commands.delete(interaction.commandName)
         );
 
-      command.execute(client, interaction);
+      command.execute(client, interaction).catch((error) => {
+        console.log(error);
+        if (command.rollback) {
+          command.rollback(client, interaction, error);
+        } else {
+          interaction.reply({
+            content: "A critical error has occured while running this action.",
+            ephemeral: true,
+          });
+        }
+      });
     }
   },
 };
