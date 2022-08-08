@@ -8,6 +8,11 @@ const {
 
 module.exports = {
   id: "proceed",
+
+  /*async rollback(interaction, client, error) {
+    // In case of error, rollback the interaction.
+  },*/
+
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);
     let ticket = client.database

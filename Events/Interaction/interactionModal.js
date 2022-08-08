@@ -1,4 +1,8 @@
-const { ButtonInteraction, EmbedBuilder, InteractionType } = require("discord.js");
+const {
+  ButtonInteraction,
+  EmbedBuilder,
+  InteractionType,
+} = require("discord.js");
 
 module.exports = {
   name: "interactionCreate",
@@ -36,6 +40,16 @@ module.exports = {
     }*/
     // Option not needed
 
-    Modal.execute(interaction, client);
+    Modal.execute(interaction, client).catch((error) => {
+      console.log(error);
+      if (Modal.rollback) {
+        Modal.rollback(client, interaction, error);
+      } else {
+        interaction.reply({
+          content: "A critical error has occured while running this action.",
+          ephemeral: true,
+        });
+      }
+    });
   },
 };
