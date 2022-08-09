@@ -6,7 +6,7 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
-const { create_time_warning, invalidate_specific_ticket } = require("../../lib/utils.js"); // Load the utils library
+const { create_time_warning, invalidate_specific_ticket, calculate_future_time } = require("../../lib/utils.js"); // Load the utils library
 
 module.exports = {
   id: "proceed",
@@ -126,6 +126,10 @@ module.exports = {
         // Setup time limit for 15/30 minutes
         setTimeout(create_time_warning, 15 * 60 * 1000, client, ticket_id, interaction.guild);
         setTimeout(invalidate_specific_ticket, 30 * 60 * 1000, client, ticket_id, interaction.guild);
+
+        // Store in database for resiliency
+        client.database.prepare(`UPDATE tickets SET timefifteen = ? WHERE tickid = ?`).run(calculate_future_time(15).toString(), ticket_id);
+        client.database.prepare(`UPDATE tickets SET timethirty = ? WHERE tickid = ?`).run(calculate_future_time(30).toString(), ticket_id);
       });
   },
 };
