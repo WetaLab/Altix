@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS verifysettings (
 )
 `
 ).run();
+
+
 db.prepare(
   `
 CREATE TABLE IF NOT EXISTS tickets (
@@ -50,7 +52,9 @@ CREATE TABLE IF NOT EXISTS tickets (
   moderatorid BLOB,
   channelid BLOB,
   threadid BLOB,
-  active BOOLEAN
+  active BOOLEAN,
+  timefifteen BLOB,
+  timethirty BLOB
 )
 `
 ).run();
