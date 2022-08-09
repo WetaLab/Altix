@@ -32,7 +32,7 @@ module.exports = {
         client.database.prepare(`UPDATE verifysettings SET role = ? WHERE guildid = ?`).run(role.name, interaction.guild.id.toString());
         let Response = new EmbedBuilder()
             .setColor(0xffffff)
-            .setDescription(`The verification role has been set to ${role.name}`);
+            .setDescription(`The verification role has been set to \`${role.name}\``);
         return interaction.followUp({
             embeds: [Response],
             ephemeral: true,
