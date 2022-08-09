@@ -81,6 +81,8 @@ module.exports = {
       let answers = JSON.parse(ticket.answers).answers;
       let thread_id = parseInt(thread_title.split("- ")[1]);
 
+
+      // This can probably be more advanced, but I'll keep it like this for now
       if (thread_title.includes("Pending")) {
         let error_embed = new EmbedBuilder()
           .setColor(0xffffff)
