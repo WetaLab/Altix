@@ -32,9 +32,6 @@ async function rollback(client, interaction, error) {
     }
   }
 
-
-  console.log(interaction.message.embeds[0])
-
   // Add to existing fields because we no longer have answers/questions
   // Check if the error is missing permissions
   if (error.code == 50013) {
