@@ -253,7 +253,20 @@ VALUES
                 .setColor(0xffffff)
                 .setDescription(`Verification was successful!`);
               return interaction.reply({ embeds: [Success], ephemeral: true });
-            });
+            }).catch((error) => {
+              // Check if error is because of missing permissions
+              if (error.code === 50013) {
+                const Error = new EmbedBuilder()
+                  .setColor(0xffa500)
+                  .setDescription(`I don't seem to have the proper access to verify you`);
+                return interaction.reply({ embeds: [Error], ephemeral: true });
+              } else {
+                const Error = new EmbedBuilder()
+                  .setColor(0xffa500)
+                  .setDescription(`An error occured while trying to verify you`);
+                return interaction.reply({ embeds: [Error], ephemeral: true });
+              }
+            })
           } else {
             const Error = new EmbedBuilder()
               .setColor(0xffffff)
