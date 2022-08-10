@@ -9,20 +9,44 @@ const {
 module.exports = {
   id: "captchabutton",
   async execute(interaction, client) {
-
-    let server_information = client.database.prepare(`SELECT * FROM verifysettings WHERE guildid = ?`).get(interaction.guild.id.toString());
-    if(!server_information){
-        let Error = new EmbedBuilder()
+    let captcha_answer = interaction.customId.split("-")[1];
+    let server_information = client.database
+      .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)
+      .get(interaction.guild.id.toString());
+    if (!server_information) {
+      let Error = new EmbedBuilder()
         .setColor(0xffffff)
         .setTitle("Something ain't right here!")
         .setDescription(
-            `There is no verification setup!\n Use /setup to create one`
+          `There is no verification setup!\n Use /setup to create one`
         );
-        return interaction.reply({
-            embeds: [Error],
-            ephemeral: true,
-        })
+      return interaction.reply({
+        embeds: [Error],
+        ephemeral: true,
+      });
     }
+
+    // Check if the captcha still exists
+    let captcha = client.database
+      .prepare(
+        `SELECT * FROM captcha WHERE guildid = ? AND userid = ? AND text = ?`
+      )
+      .get(
+        interaction.guild.id.toString(),
+        interaction.member.id.toString(),
+        captcha_answer
+      );
+    if (!captcha) {
+      let Error = new EmbedBuilder()
+        .setColor(0xffffff)
+        .setTitle("Something ain't right here!")
+        .setDescription(`The captcha you entered is invalid!`);
+      return interaction.reply({
+        embeds: [Error],
+        ephemeral: true,
+      });
+    }
+
     // Check if they've already been verified
     if (
       interaction.member.roles.cache.some(
@@ -35,7 +59,6 @@ module.exports = {
         .setDescription(`You've already been verified!`);
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
-    let captcha_answer = interaction.customId.split("-")[1];
 
     // Create modal
     let modal = new ModalBuilder()

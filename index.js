@@ -54,9 +54,20 @@ CREATE TABLE IF NOT EXISTS tickets (
   threadid BLOB,
   active BOOLEAN,
   timefifteen BLOB,
-  timethirty BLOB
+  timethirty BLOB,
+  completedmain BOOLEAN
 )
 `
+).run();
+
+db.prepare(
+  `
+  CREATE TABLE IF NOT EXISTS captcha (
+    text STRING PRIMARY KEY,
+    userid BLOB,
+    guildid BLOB
+  )
+  `
 ).run();
 
 client.database = db;
