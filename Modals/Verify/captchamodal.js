@@ -5,6 +5,12 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
+const { writeFileSync, unlinkSync } = require("fs");
+
+const { Captcha } = require("captcha-canvas");
+
+const { invalidate_captcha } = require("../../lib/utils.js"); // Load the utils library
+
 module.exports = {
   id: "captchamodal",
   async execute(interaction, client) {
@@ -30,17 +36,81 @@ module.exports = {
 
     let answer = interaction.fields.getTextInputValue("captchamodal-answer");
 
+    // Check if the captcha still exists
+    let captcha = client.database.prepare(
+      `SELECT * FROM captcha WHERE guildid = ? AND userid = ? AND text = ?`
+    ).get(interaction.guild.id, interaction.member.id, captcha_correct);
+    if (!captcha) {
+      let no_captcha = new EmbedBuilder()
+        .setColor(0xffa500)
+        .setDescription(`***This captcha is no longer valid.***\nYou've completed this captcha, waited too long or you didn't answer it correctly.`)
+      return interaction.reply({
+        embeds: [no_captcha],
+        ephemeral: true,
+      });
+    }
+
     if (answer.toLowerCase() !== captcha_correct.toLowerCase()) {
-      let incorrect_embed = new EmbedBuilder()
+      /*let incorrect_embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setDescription(
           `***Incorrect Answer***\nThe answer you provided was incorrect.`
         );
 
-      return interaction.reply({
+      interaction.reply({
         embeds: [incorrect_embed],
         ephemeral: true,
-      });
+      });*/
+
+      // Delete the captcha from db
+      client.database
+        .prepare(
+          `DELETE FROM captcha WHERE userid = ? AND guildid = ? AND text = ?`
+        )
+        .run(
+          interaction.member.id.toString(),
+          interaction.guild.id.toString(),
+          captcha_correct
+        );
+
+      // Regenerate the captcha
+      const captcha = new Captcha();
+      captcha.async = false;
+      captcha.addDecoy(); //Add decoy text on captcha canvas.
+      captcha.drawTrace(); //draw trace lines on captcha canvas.
+      captcha.drawCaptcha();
+      await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
+      let embed = new EmbedBuilder()
+        .setColor(0xffa500)
+        .setTitle("Captcha")
+        .setDescription(`***Answer Incorrect***\nThe answer you provided was incorrect. Please try again.`)
+        .setImage(`attachment://captcha_${captcha.text}.png`);
+
+      const row = new ActionRowBuilder()
+        .addComponents(
+          new ButtonBuilder()
+            .setCustomId(`captchabutton-${captcha.text}`)
+            .setLabel("Answer")
+            .setStyle(ButtonStyle.Success)
+        );
+
+      client.database.prepare(
+        `
+        INSERT INTO captcha (userid, guildid, text) VALUES (?, ?, ?)
+        `
+      ).run(interaction.member.id.toString(), interaction.guild.id.toString(), captcha.text);
+
+      setTimeout(invalidate_captcha, 30000, client, interaction, interaction.member.id, interaction.guild.id, captcha.text);
+
+      return interaction.reply({
+        files: [`./captcha_${captcha.text}.png`],
+        embeds: [embed],
+        ephemeral: true,
+        components: [row],
+      }).then(() => {
+        // Delete the captcha file
+        unlinkSync(`./captcha_${captcha.text}.png`);
+      })
     }
 
     let server_information = client.database
@@ -48,7 +118,6 @@ module.exports = {
       .get(interaction.guild.id.toString());
 
     if (!is_thread_verification) {
-      
       let role = interaction.guild.roles.cache.find(
         (r) => r.name === server_information.role
       );
@@ -81,7 +150,6 @@ module.exports = {
       let answers = JSON.parse(ticket.answers).answers;
       let thread_id = parseInt(thread_title.split("- ")[1]);
 
-
       // This can probably be more advanced, but I'll keep it like this for now
       if (thread_title.includes("Pending")) {
         let error_embed = new EmbedBuilder()
@@ -98,9 +166,11 @@ module.exports = {
           .setStyle(ButtonStyle.Success)
           .setDisabled(true)
       );
-      interaction.message.edit({
-        components: [row],
-      }).catch(() => {});
+      interaction.message
+        .edit({
+          components: [row],
+        })
+        .catch(() => {});
 
       client.database
         .prepare(
@@ -152,6 +222,10 @@ WHERE
               .setLabel("Ask Manual Questions")
               .setStyle(ButtonStyle.Primary)
           );
+
+          client.database.prepare(
+            `UPDATE tickets SET completedmain = 1 WHERE tickid = ?`
+          ).run(thread_id);
 
           channel
             .send({ embeds: [review_embed], components: [row] })

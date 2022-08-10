@@ -11,7 +11,12 @@ module.exports = {
     console.log("Client ready for action!");
 
     client.user.setPresence({
-      activities: [{ name: `verifications`, type: ActivityType.Watching }],
+      activities: [
+        {
+          name: `verifications`,
+          type: ActivityType.Watching,
+        },
+      ],
       status: "online",
     });
 
@@ -19,7 +24,7 @@ module.exports = {
     // Loop through all tickets and set up timeout if necessary
     let all_tickets = client.database.prepare(`SELECT * FROM tickets`).all();
     all_tickets.forEach((row) => {
-      if (!(row.io == 0 && row.active == 1)) {
+      if (row.completedmain == 0) {
         // Calculate the time difference between now and the future time
         let time_fifteen = new Date(Date.parse(row.timefifteen));
         let time_thirty = new Date(Date.parse(row.timethirty));

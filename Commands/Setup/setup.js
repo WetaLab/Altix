@@ -34,6 +34,17 @@ module.exports = {
   ],
 
   async execute(client, interaction) {
+
+    if(interaction.channel.isThread) {
+      let Error = new EmbedBuilder()
+        .setColor(0xffffff)
+        .setTitle("Something ain't right here!")
+        .setDescription(`You can't use this command in a thread!`);
+      return interaction.followUp({
+        embeds: [Error],
+        ephemeral: true,
+      });
+    }
     let channel;
     channel = {
       id: -1,

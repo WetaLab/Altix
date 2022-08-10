@@ -62,10 +62,7 @@ WHERE
       return message.delete();
     }
 
-    if (
-      thread_information.io == 0 &&
-      thread_information.moderatorid == -1
-    ) {
+    if (thread_information.io == 0 && thread_information.moderatorid == -1) {
       return message.delete();
     }
 
@@ -146,6 +143,20 @@ WHERE
         captcha.drawCaptcha();
         await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
 
+        // Add captcha to the database
+        client.database
+          .prepare(
+            `
+          INSERT INTO captcha (text, userid, guildid)
+          VALUES (?, ?, ?)
+          `
+          )
+          .run(
+            captcha.text,
+            message.author.id.toString(),
+            message.guild.id.toString()
+          );
+
         const embed = new EmbedBuilder()
           .setColor(0xffa500)
           .setTitle("Captcha")
@@ -224,6 +235,10 @@ WHERE
                 .setStyle(ButtonStyle.Primary)
             );
 
+            client.database
+              .prepare(`UPDATE tickets SET completedmain = 1 WHERE tickid = ?`)
+              .run(thread_id);
+
             channel
               .send({ embeds: [review_embed], components: [row] })
               .then(() => {
@@ -248,7 +263,7 @@ WHERE
                   .setFooter({
                     text: `Please try again later.`,
                   });
-                message.channel.send({ embeds: [Response] });
+                message.author.send({ embeds: [Response] }).catch(() => {});
 
                 // Delete the ticket from the database so it can be re-opened
                 client.database
