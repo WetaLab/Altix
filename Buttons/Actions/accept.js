@@ -67,7 +67,7 @@ module.exports = {
       message_embed.fields.push({
         name: "A serious error has occured",
         value:
-          "I do not have the permission to give the verified role to the user. Please grant me the permission.",
+          "I do not have the permission to give the verified role to the user.\nPlease grant me the permission.",
       });
     } else {
       console.log(error);
