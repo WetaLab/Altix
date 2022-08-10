@@ -40,7 +40,10 @@ module.exports = {
     }*/
     // Option not needed
 
-    Modal.execute(interaction, client).catch((error) => {
+
+    try {
+      await Modal.execute(interaction, client);
+    } catch (error) {
       console.log(error);
       if (Modal.rollback) {
         Modal.rollback(client, interaction, error);
@@ -50,6 +53,6 @@ module.exports = {
           ephemeral: true,
         });
       }
-    });
+    }
   },
 };

@@ -6,89 +6,114 @@ const {
   ButtonStyle,
 } = require("discord.js");
 
-async function rollback(client, interaction, error) {
-  /* 
-    NOTE NOTE NOTE!
-    This is a real "oh fuck" moment if called, because the ticket
-    has most likely been deleted, and cannot be rolled back.
-
-    The best solution would be to have some kind of "undo" system,
-    but that's a bit of a pain to implement, so instead we just
-    message reviewer that something went wrong.
-    (We can't message the user because we don't know their ID)
-  */
-
-  // Edit the message to say something went wrong
-
-  let message_embed_raw = interaction.message.embeds[0].data
-  let message_embed = {
-    title: message_embed_raw.title,
-    footer: message_embed_raw.footer,
-    fields: message_embed_raw.fields,
-    color: 0xffa500,
-    author: {
-      name: message_embed_raw.author.name,
-      icon_url: message_embed_raw.author.icon_url,
-    }
-  }
-
-  // Add to existing fields because we no longer have answers/questions
-  // Check if the error is missing permissions
-  if (error.code == 50013) {
-
-    message_embed.fields.push({
-      name: "A serious error has occured",
-      value: "I do not have the permission to give the verified role to the user. Please grant me the permission.",
-    });
-
-  } else {
-    console.log(error);
-    message_embed.push({
-      name: "A serious error has occured",
-      value: "Please report this issue to Static#4371 if the issue persists.",
-    });
-  }
-
-  // Lock buttons just in case
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Success)
-      .setLabel("Accept")
-      .setCustomId("accept-fail")
-      .setDisabled(true),
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Danger)
-      .setLabel("Reject")
-      .setCustomId("reject-fail")
-      .setDisabled(true),
-    new ButtonBuilder()
-      .setLabel("Ask Manual Questions")
-      .setStyle(ButtonStyle.Primary)
-      .setCustomId("manual-fail")
-      .setDisabled(true)
-  );
-
-  await interaction.message.edit({
-    embeds: [message_embed],
-    components: [row],
-  });
-
-  interaction.deferUpdate();
-
-  // Check if ticket is still in the database, if so delete it
-  const ticket = client.database.prepare(
-    "SELECT * FROM tickets WHERE tickid = ?"
-  ).get(interaction.message.embeds[0].footer.text.split(": ")[1]);
-  if (ticket) {
-    client.database
-      .prepare(`DELETE FROM tickets WHERE tickid = ?`)
-      .run(ticket.tickid);
-  }
-}
-
 module.exports = {
   id: "accept",
   permission: PermissionsBitField.Flags.ManageRoles,
+
+  async rollback(client, interaction, error) {
+    /* 
+      NOTE NOTE NOTE!
+      This is a real "oh fuck" moment if called, because the ticket
+      has most likely been deleted, and cannot be rolled back.
+  
+      The best solution would be to have some kind of "undo" system,
+      but that's a bit of a pain to implement, so instead we just
+      message reviewer that something went wrong.
+      (We can't message the user because we don't know their ID)
+    */
+
+    // Edit the message to say something went wrong
+
+    if (!interaction.message) {
+      if (error.code == 50013) {
+        let error_embed = new EmbedBuilder()
+          .setColor(0xffa500)
+          .setDescription(
+            `***A serious error has occured***\nI do not have the permission to give the verified role to the user.\nPlease grant me the permission.`
+          );
+        return interaction.reply({
+          embeds: [error_embed],
+          ephemeral: true,
+        });
+      } else {
+        let error_embed = new EmbedBuilder()
+          .setColor(0xffa500)
+          .setDescription(
+            `***A serious error has occured***\nPlease report this issue to Static#4371 if the issue persists.`
+          );
+
+        return interaction.reply({
+          embeds: [error_embed],
+          ephemeral: true,
+        });
+      }
+    }
+
+    let message_embed_raw = interaction.message.embeds[0].data;
+    let message_embed = {
+      title: message_embed_raw.title,
+      footer: message_embed_raw.footer,
+      fields: message_embed_raw.fields,
+      color: 0xffa500,
+      author: {
+        name: message_embed_raw.author.name,
+        icon_url: message_embed_raw.author.icon_url,
+      },
+    };
+
+    // Add to existing fields because we no longer have answers/questions
+    // Check if the error is missing permissions
+    if (error.code == 50013) {
+      message_embed.fields.push({
+        name: "A serious error has occured",
+        value:
+          "I do not have the permission to give the verified role to the user. Please grant me the permission.",
+      });
+    } else {
+      console.log(error);
+      message_embed.push({
+        name: "A serious error has occured",
+        value: "Please report this issue to Static#4371 if the issue persists.",
+      });
+    }
+
+    // Lock buttons just in case
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Success)
+        .setLabel("Accept")
+        .setCustomId("accept-fail")
+        .setDisabled(true),
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Danger)
+        .setLabel("Reject")
+        .setCustomId("reject-fail")
+        .setDisabled(true),
+      new ButtonBuilder()
+        .setLabel("Ask Manual Questions")
+        .setStyle(ButtonStyle.Primary)
+        .setCustomId("manual-fail")
+        .setDisabled(true)
+    );
+
+    await interaction.message.edit({
+      embeds: [message_embed],
+      components: [row],
+    });
+
+    interaction.deferUpdate();
+
+    // Check if ticket is still in the database, if so delete it
+    const ticket = client.database
+      .prepare("SELECT * FROM tickets WHERE tickid = ?")
+      .get(interaction.message.embeds[0].footer.text.split(": ")[1]);
+    if (ticket) {
+      client.database
+        .prepare(`DELETE FROM tickets WHERE tickid = ?`)
+        .run(ticket.tickid);
+    }
+  },
+
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);
     let ticket = client.database
@@ -208,9 +233,7 @@ module.exports = {
             });
             interaction.deferUpdate();
           })
-          .catch(async (error) => {
-            rollback(client,interaction, error);
-          });
+          
       } else {
         const Error = new EmbedBuilder()
           .setColor(0xffffff)

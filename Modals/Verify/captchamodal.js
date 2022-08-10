@@ -13,6 +13,41 @@ const { invalidate_captcha } = require("../../lib/utils.js"); // Load the utils 
 
 module.exports = {
   id: "captchamodal",
+
+
+  // Rollback incase of error
+  async rollback(client, interaction, error) {
+
+    // Delete the captcha if possible
+    let captcha_correct = interaction.customId.split("-")[1];
+    client.database.prepare(`
+    DELETE FROM captcha WHERE text = ?
+    `
+    ).run(captcha_correct);
+    if (error.code == 50013) {
+      let error_embed = new EmbedBuilder()
+        .setColor(0xffa500)
+        .setDescription(
+          `***A serious error has occured***\nI do not have the permission to give you the verified role.`
+        );
+      return interaction.reply({
+        embeds: [error_embed],
+        ephemeral: true,
+      });
+    } else {
+      let error_embed = new EmbedBuilder()
+        .setColor(0xffa500)
+        .setDescription(
+          `***A serious error has occured***\nPlease report this issue to Static#4371 if the issue persists.`
+        );
+
+      return interaction.reply({
+        embeds: [error_embed],
+        ephemeral: true,
+      });
+    }
+  },
+
   async execute(interaction, client) {
     let captcha_correct = interaction.customId.split("-")[1];
 
@@ -37,13 +72,17 @@ module.exports = {
     let answer = interaction.fields.getTextInputValue("captchamodal-answer");
 
     // Check if the captcha still exists
-    let captcha = client.database.prepare(
-      `SELECT * FROM captcha WHERE guildid = ? AND userid = ? AND text = ?`
-    ).get(interaction.guild.id, interaction.member.id, captcha_correct);
+    let captcha = client.database
+      .prepare(
+        `SELECT * FROM captcha WHERE guildid = ? AND userid = ? AND text = ?`
+      )
+      .get(interaction.guild.id, interaction.member.id, captcha_correct);
     if (!captcha) {
       let no_captcha = new EmbedBuilder()
         .setColor(0xffa500)
-        .setDescription(`***This captcha is no longer valid.***\nYou've completed this captcha, waited too long or you didn't answer it correctly.`)
+        .setDescription(
+          `***This captcha is no longer valid.***\nYou've completed this captcha, waited too long or you didn't answer it correctly.`
+        );
       return interaction.reply({
         embeds: [no_captcha],
         ephemeral: true,
@@ -83,34 +122,51 @@ module.exports = {
       let embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setTitle("Captcha")
-        .setDescription(`***Answer Incorrect***\nThe answer you provided was incorrect. Please try again.`)
+        .setDescription(
+          `***Answer Incorrect***\nThe answer you provided was incorrect. Please try again.`
+        )
         .setImage(`attachment://captcha_${captcha.text}.png`);
 
-      const row = new ActionRowBuilder()
-        .addComponents(
-          new ButtonBuilder()
-            .setCustomId(`captchabutton-${captcha.text}`)
-            .setLabel("Answer")
-            .setStyle(ButtonStyle.Success)
-        );
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`captchabutton-${captcha.text}`)
+          .setLabel("Answer")
+          .setStyle(ButtonStyle.Success)
+      );
 
-      client.database.prepare(
-        `
+      client.database
+        .prepare(
+          `
         INSERT INTO captcha (userid, guildid, text) VALUES (?, ?, ?)
         `
-      ).run(interaction.member.id.toString(), interaction.guild.id.toString(), captcha.text);
+        )
+        .run(
+          interaction.member.id.toString(),
+          interaction.guild.id.toString(),
+          captcha.text
+        );
 
-      setTimeout(invalidate_captcha, 30000, client, interaction, interaction.member.id, interaction.guild.id, captcha.text);
+      setTimeout(
+        invalidate_captcha,
+        30000,
+        client,
+        interaction,
+        interaction.member.id,
+        interaction.guild.id,
+        captcha.text
+      );
 
-      return interaction.reply({
-        files: [`./captcha_${captcha.text}.png`],
-        embeds: [embed],
-        ephemeral: true,
-        components: [row],
-      }).then(() => {
-        // Delete the captcha file
-        unlinkSync(`./captcha_${captcha.text}.png`);
-      })
+      return interaction
+        .reply({
+          files: [`./captcha_${captcha.text}.png`],
+          embeds: [embed],
+          ephemeral: true,
+          components: [row],
+        })
+        .then(() => {
+          // Delete the captcha file
+          unlinkSync(`./captcha_${captcha.text}.png`);
+        });
     }
 
     let server_information = client.database
@@ -223,9 +279,9 @@ WHERE
               .setStyle(ButtonStyle.Primary)
           );
 
-          client.database.prepare(
-            `UPDATE tickets SET completedmain = 1 WHERE tickid = ?`
-          ).run(thread_id);
+          client.database
+            .prepare(`UPDATE tickets SET completedmain = 1 WHERE tickid = ?`)
+            .run(thread_id);
 
           channel
             .send({ embeds: [review_embed], components: [row] })
