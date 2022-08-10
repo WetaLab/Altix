@@ -233,7 +233,9 @@ module.exports = {
             });
             interaction.deferUpdate();
           })
-          
+          .catch(async (error) => {
+            this.rollback(client, interaction, error);
+          });
       } else {
         const Error = new EmbedBuilder()
           .setColor(0xffffff)
