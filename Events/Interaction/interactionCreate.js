@@ -42,7 +42,9 @@ module.exports = {
           }) && client.commands.delete(interaction.commandName)
         );
 
-      command.execute(client, interaction).catch((error) => {
+      try {
+        await command.execute(client, interaction);
+      } catch (error) {
         console.log(error);
         if (command.rollback) {
           command.rollback(client, interaction, error);
@@ -52,7 +54,7 @@ module.exports = {
             ephemeral: true,
           });
         }
-      });
+      }
     }
   },
 };

@@ -36,16 +36,18 @@ module.exports = {
     }*/
     // Option not needed
 
-    Button.execute(interaction, client).catch((error) => {
+    try {
+      await Button.execute(interaction, client);
+    } catch (error) {
       console.log(error);
       if (Button.rollback) {
-        Button.rollback(interaction, client, error);
+        Button.rollback(client, interaction, error);
       } else {
         interaction.reply({
           content: "A critical error has occured while running this action.",
           ephemeral: true,
         });
       }
-    });
+    }
   },
 };
