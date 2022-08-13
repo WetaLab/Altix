@@ -34,7 +34,7 @@ module.exports = {
       .get(
         interaction.guild.id.toString(),
         interaction.member.id.toString(),
-        captcha_answer
+        captcha_answer.toUpperCase()
       );
     if (!captcha) {
       let Error = new EmbedBuilder()

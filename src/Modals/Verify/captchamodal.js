@@ -14,16 +14,17 @@ const { invalidate_captcha } = require("../../lib/utils.js"); // Load the utils 
 module.exports = {
   id: "captchamodal",
 
-
   // Rollback incase of error
   async rollback(client, interaction, error) {
-
     // Delete the captcha if possible
     let captcha_correct = interaction.customId.split("-")[1];
-    client.database.prepare(`
+    client.database
+      .prepare(
+        `
     DELETE FROM captcha WHERE text = ?
     `
-    ).run(captcha_correct);
+      )
+      .run(captcha_correct);
     if (error.code == 50013) {
       let error_embed = new EmbedBuilder()
         .setColor(0xffa500)
@@ -174,6 +175,16 @@ module.exports = {
       .get(interaction.guild.id.toString());
 
     if (!is_thread_verification) {
+      client.database
+        .prepare(
+          `
+                DELETE FROM captcha WHERE userid = ? AND guildid = ? AND text = ?`
+        )
+        .run(
+          interaction.member.id.toString(),
+          interaction.guild.id.toString(),
+          captcha_correct.toUpperCase()
+        );
       let role = interaction.guild.roles.cache.find(
         (r) => r.name === server_information.role
       );
@@ -286,6 +297,18 @@ WHERE
           channel
             .send({ embeds: [review_embed], components: [row] })
             .then(() => {
+              // Delete the captcha from the database
+              client.database
+                .prepare(
+                  `
+                DELETE FROM captcha WHERE userid = ? AND guildid = ? AND text = ?`
+                )
+                .run(
+                  interaction.member.id.toString(),
+                  interaction.guild.id.toString(),
+                  captcha_correct.toUpperCase()
+                );
+
               let Response = new EmbedBuilder()
                 .setColor(0xffffff)
                 .setDescription(
