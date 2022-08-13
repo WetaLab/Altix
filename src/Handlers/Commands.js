@@ -2,9 +2,9 @@ const { readdirSync } = require("fs");
 const { client } = require("discord.js");
 
 module.exports = (client, Discord) => {
-  const command_folder = readdirSync("./Commands");
+  const command_folder = readdirSync("./src/Commands");
   for (const folder of command_folder) {
-    const command_files = readdirSync(`./Commands/${folder}`).filter((files) =>
+    const command_files = readdirSync(`./src/Commands/${folder}`).filter((files) =>
       files.endsWith(".js")
     );
     const commands_array = [];

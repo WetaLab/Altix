@@ -73,7 +73,7 @@ db.prepare(
 client.database = db;
 
 ["Events", "Commands", "Buttons", "Modals"].forEach((handler) => {
-  require(`./Handlers/${handler}`)(client);
+  require(`./src/Handlers/${handler}`)(client);
 });
 
 client.login(token);

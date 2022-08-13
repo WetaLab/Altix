@@ -1,9 +1,9 @@
 const { readdirSync } = require("fs");
 
 module.exports = (client, Discord) => {
-  const modal_folder = readdirSync("./Modals");
+  const modal_folder = readdirSync("./src/Modals");
   for (const folder of modal_folder) {
-    const modal_files = readdirSync(`./Modals/${folder}`).filter((files) =>
+    const modal_files = readdirSync(`./src/Modals/${folder}`).filter((files) =>
       files.endsWith(".js")
     );
     for (const file of modal_files) {
