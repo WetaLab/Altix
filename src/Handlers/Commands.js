@@ -3,7 +3,7 @@ const { client, REST, Routes } = require("discordjs-latest");
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 
-module.exports = async (client, Discord) => {
+module.exports = (client, Discord) => {
   const command_folder = readdirSync("./src/Commands");
   for (const folder of command_folder) {
     const command_files = readdirSync(`./src/Commands/${folder}`).filter((files) =>
@@ -23,7 +23,7 @@ module.exports = async (client, Discord) => {
        try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        const data = await rest.put(
+        const data = rest.put(
           Routes.applicationGuildCommands(clientId, guildId),
           { body: commands },
         );
