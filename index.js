@@ -1,4 +1,4 @@
-const Discord = require("discord.js-latest");
+const Discord = require("discordjs-latest");
 const SQLite = require("better-sqlite3");
 
 const {
