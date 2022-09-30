@@ -20,7 +20,7 @@ module.exports = (client, Discord) => {
         }); Use this only for development env*/
         
         // Production
-        await rest.put(
+        rest.put(
           Routes.applicationCommands("1025532290664763492"),
           { body: commands_array },
         );
