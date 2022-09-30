@@ -1,4 +1,4 @@
-const { PermissionsBitField, EmbedBuilder } = require("discord.js-latest");
+const { PermissionsBitField, EmbedBuilder } = require("discordjs-latest");
 
 module.exports = {
   name: "captcha",

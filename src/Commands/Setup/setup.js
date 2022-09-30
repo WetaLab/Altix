@@ -11,7 +11,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require("discord.js-latest");
+} = require("discordjs-latest");
 
 module.exports = {
   name: "setup",
