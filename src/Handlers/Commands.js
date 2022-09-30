@@ -1,5 +1,7 @@
 const { readdirSync } = require("fs");
-const { client } = require("discordjs-latest");
+const { client, REST, Routes } = require("discordjs-latest");
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
 
 module.exports = (client, Discord) => {
   const command_folder = readdirSync("./src/Commands");
@@ -13,9 +15,24 @@ module.exports = (client, Discord) => {
       client.commands.set(command.name, command);
       commands_array.push(command);
       client.on("ready", () => {
-        commands_array.forEach((object) => {
+        /*commands_array.forEach((object) => {
           client.guilds.cache.get("882378589364944976").commands.create(object);
-        });
+        }); Use this only for development env*/
+        
+        // Production
+       try {
+        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+        const data = await rest.put(
+          Routes.applicationGuildCommands(clientId, guildId),
+          { body: commands },
+        );
+
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+      } catch (error) {
+        console.error(error);
+      }
+        
       });
     }
   }
