@@ -1,5 +1,5 @@
 const { readdirSync } = require("fs");
-const { client } = require("discord.js-latest");
+const { client } = require("discordjs-latest");
 
 module.exports = (client, Discord) => {
   const command_folder = readdirSync("./src/Commands");

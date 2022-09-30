@@ -2,7 +2,7 @@ const {
   ButtonInteraction,
   EmbedBuilder,
   InteractionType,
-} = require("discord.js-latest");
+} = require("discordjs-latest");
 
 module.exports = {
   name: "interactionCreate",
