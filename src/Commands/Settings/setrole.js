@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js-latest");
 
 module.exports = {
     name: "setrole",

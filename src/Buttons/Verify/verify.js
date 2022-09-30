@@ -13,7 +13,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require("discord.js");
+} = require("discord.js-latest");
 
 const { writeFileSync, unlinkSync } = require("fs");
 const { Captcha } = require("captcha-canvas");

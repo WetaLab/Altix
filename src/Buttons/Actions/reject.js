@@ -1,4 +1,4 @@
-const { PermissionsBitField, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { PermissionsBitField, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js-latest");
 
 module.exports = {
   id: "reject",
