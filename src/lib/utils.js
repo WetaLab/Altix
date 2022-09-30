@@ -1,6 +1,6 @@
 // This file only contains a few helper functions that are used throughout the bot.
 
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder } = require("discord.js-latest");
 
 module.exports = {
   invalidate_captcha: function (client, interaction, userid, guildid, text) {

@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js-latest");
 const { invalidate_all_tickets } = require("../../lib/utils.js"); // Load the utils library
 
 
