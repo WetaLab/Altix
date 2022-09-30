@@ -1,4 +1,4 @@
-const { ButtonInteraction, EmbedBuilder } = require("discord.js-latest");
+const { ButtonInteraction, EmbedBuilder } = require("discordjs-latest");
 
 module.exports = {
   name: "interactionCreate",

@@ -4,7 +4,7 @@ const {
   TextInputBuilder,
   TextInputStyle,
   ActionRowBuilder,
-} = require("discord.js-latest");
+} = require("discordjs-latest");
 
 module.exports = {
   id: "captchabutton",

@@ -4,7 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require("discord.js-latest");
+} = require("discordjs-latest");
 
 const { create_time_warning, invalidate_specific_ticket, calculate_future_time } = require("../../lib/utils.js"); // Load the utils library
 
