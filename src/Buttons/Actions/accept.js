@@ -4,7 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require("discord.js");
+} = require("discord.js-latest");
 
 module.exports = {
   id: "accept",

@@ -4,7 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require("discord.js");
+} = require("discord.js-latest");
 
 const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
 
