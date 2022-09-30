@@ -10,9 +10,8 @@ const {
   ButtonStyle,
   Collection,
   PermissionsBitField,
-} = require("discord.js-latest");
+} = require("discordjs-latest");
 
-const { REST } = require("@discordjs/rest");
 const token = process.env["TOKEN"];
 
 //console.log(GatewayIntentBits)
