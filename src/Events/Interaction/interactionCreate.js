@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require("discord.js-latest");
+const { EmbedBuilder, PermissionsBitField } = require("discordjs-latest");
 module.exports = {
   name: "interactionCreate",
   /**
