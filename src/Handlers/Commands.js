@@ -3,7 +3,7 @@ const { client, REST, Routes } = require("discordjs-latest");
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 
-module.exports = (client, Discord) => {
+module.exports = async (client, Discord) => {
   const command_folder = readdirSync("./src/Commands");
   for (const folder of command_folder) {
     const command_files = readdirSync(`./src/Commands/${folder}`).filter((files) =>
