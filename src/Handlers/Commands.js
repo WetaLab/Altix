@@ -20,18 +20,10 @@ module.exports = (client, Discord) => {
         }); Use this only for development env*/
         
         // Production
-       try {
-        console.log(`Started refreshing ${commands.length} application (/) commands.`);
-
-        const data = rest.put(
-          Routes.applicationGuildCommands(clientId, guildId),
-          { body: commands },
+        await rest.put(
+          Routes.applicationCommands("1025532290664763492"),
+          { body: commands_array },
         );
-
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-      } catch (error) {
-        console.error(error);
-      }
         
       });
     }
