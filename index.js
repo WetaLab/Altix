@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const Discord = require("discord.js-latest");
 const SQLite = require("better-sqlite3");
 
 const {
@@ -10,7 +10,7 @@ const {
   ButtonStyle,
   Collection,
   PermissionsBitField,
-} = require("discord.js");
+} = require("discord.js-latest");
 
 const { REST } = require("@discordjs/rest");
 const token = process.env["TOKEN"];

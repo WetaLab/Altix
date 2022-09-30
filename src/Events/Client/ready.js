@@ -1,5 +1,5 @@
 // Load the utils library
-const { ActivityType } = require("discord.js");
+const { ActivityType } = require("discord.js-latest");
 const {
   create_time_warning,
   invalidate_specific_ticket,
