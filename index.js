@@ -59,6 +59,9 @@ CREATE TABLE IF NOT EXISTS tickets (
 `
 ).run();
 
+console.log("Active Tickets", db.prepare(`SELECT * FROM tickets`).all())
+//db.prepare(`DELETE FROM tickets WHERE tickid = ?`).run("9224754627435")
+
 db.prepare(
   `
   CREATE TABLE IF NOT EXISTS captcha (
