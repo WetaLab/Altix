@@ -34,8 +34,8 @@ module.exports = {
   ],
 
   async execute(client, interaction) {
-
-    if(interaction.channel.isThread) {
+    console.log(interaction.channel.isThread())
+    if(interaction.channel.isThread()) {
       let Error = new EmbedBuilder()
         .setColor(0xffffff)
         .setTitle("Something ain't right here!")

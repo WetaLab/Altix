@@ -196,6 +196,7 @@ WHERE
 `
           )
           .run(thread_id);
+        console.log("server information",server_information)
         message.guild.channels
           .fetch(server_information.channel)
           .then((channel) => {

@@ -57,7 +57,7 @@ WHERE
       .get(interaction.guild.id.toString());
     
 
-    if (!rev_channel.channel) {
+    if (!rev_channel || !rev_channel.channel) {
       let Error = new EmbedBuilder()
         .setColor(0xffffff)
         .setTitle("Something ain't right here!")
