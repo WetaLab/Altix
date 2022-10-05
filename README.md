@@ -64,7 +64,7 @@
 
 [![Altix Screen Shot][product-screenshot]](https://discord.com/oauth2/authorize?client_id=1025532290664763492&scope=bot&permissions=534992250944)
 
-There are many available verification bots available; however, we didn't find a suitable one, both from a technical standpoint, and usability. I believe that it'll be the last verification bot you need
+There are many verification bots available; however, we didn't find a suitable one for our needs, both from a technical standpoint and usability. I believe that this will be the last verification bot you will need.
 
 Here's why:
 * Setting up cannot be easier, a single command and you're off
