@@ -175,15 +175,15 @@ Project Link: [https://github.com/7exe/Altix](https://github.com/7exe/Altix)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/7exe/Altix.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/7exe/Altix?style=for-the-badge
 [contributors-url]: https://github.com/7exe/Altix/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/7exe/Altix.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/7exe/Altix?style=for-the-badge
 [forks-url]: https://github.com/7exe/Altix/network/members
-[stars-shield]: https://img.shields.io/github/stars/7exe/Altix.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/7exe/Altix?style=for-the-badge
 [stars-url]: https://github.com/7exe/Altix/stargazers
-[issues-shield]: https://img.shields.io/github/issues/7exe/Altix.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/7exe/Altix?style=for-the-badge
 [issues-url]: https://github.com/7exe/Altix/issues
-[license-shield]: https://img.shields.io/github/license/7exe/Altix.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/7exe/Altix?style=for-the-badge
 [license-url]: https://github.com/7exe/Altix/blob/master/LICENSE.txt
 [product-screenshot]: images/frontpage.png
 [Discord.js]: https://img.shields.io/badge/Discord.js-5865F2?style=for-the-badge&logo=discord&logoColor=white
