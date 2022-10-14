@@ -40,6 +40,9 @@ module.exports = {
         .setColor(0xffa500)
         .setDescription(
           `***A serious error has occured***\nPlease report this issue to Static#4371 if the issue persists.`
+        )
+        .setFooter(
+          `Error code -- ${error.code == undefined ? "Unknown, not diagnosed." : error.code}`
         );
 
       return interaction.reply({
