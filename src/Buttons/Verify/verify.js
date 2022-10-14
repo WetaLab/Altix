@@ -152,7 +152,7 @@ VALUES
           const thread = await interaction.channel.threads
             .create({
               name: "Verification Thread - " + generated_id,
-              autoArchiveDuration: 60,
+              autoArchiveDuration: 'MAX', // Set the archive duration to max based on the guild's features
               reason: "Verification Thread",
             })
             .then((thread) => {
