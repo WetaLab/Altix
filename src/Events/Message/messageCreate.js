@@ -22,8 +22,9 @@ const { Captcha } = require("captcha-canvas");
 module.exports = {
   name: "messageCreate",
   /**
-   * @param {Client} client
    * @param {Message} message
+   * @param {Client} client
+   * @param {Discord} Discord
    **/
   async execute(message, client, Discord) {
     if (!message.channel.isThread()) return;
