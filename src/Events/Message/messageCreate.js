@@ -16,6 +16,8 @@ const {
   ButtonStyle,
 } = require("discordjs-latest");
 
+const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
+
 const { writeFileSync, unlinkSync } = require("fs");
 const { Captcha } = require("captcha-canvas");
 
@@ -99,7 +101,7 @@ WHERE
     ];
 
     answers.push({
-      content: message.content,
+      content: sanitize_string(message.content),
     });
     let database_complient_answers = JSON.stringify({ answers: answers });
     client.database
