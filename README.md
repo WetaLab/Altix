@@ -73,6 +73,8 @@ Here's why:
 
 Of course, Altix isn't perfect and we strive to perfect our system to better suit our users.
 
+<i>Altix's core principles were designed after Sno's Wuffer</i>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
