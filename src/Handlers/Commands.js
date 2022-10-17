@@ -27,7 +27,7 @@ module.exports = (client, Discord) => {
     // Production
     console.log("Registred commands", commands_array);
     rest.put(
-      Routes.applicationCommands("1025532290664763492"),
+      Routes.applicationCommands("1025532290664763492"), // Update this to dynamic
       { body: commands_array },
     );
 

@@ -108,10 +108,10 @@ WHERE
         // Handle thread verification
 
         // Check if there already is a thread for this user
-        let thread = client.database
+        let ticket = client.database
           .prepare(
             `
-SELECT tickid
+SELECT *
 FROM   tickets
 WHERE  userid = ?
        AND guildid = ? 
@@ -122,90 +122,131 @@ WHERE  userid = ?
             interaction.guild.id.toString()
           );
 
-        if (!thread) {
-          let JSON_answers = {
-            answers: [],
-          };
+        // Check if there is a ticket, and if so, does the ticket have a functional channel
+        if (ticket) {
+          let channel = interaction.guild.channels.cache.get(ticket.channelid)
+          if(channel) {
+            let thread = channel.threads.cache.get(ticket.threadid)
+            if(!thread){
+              client.database
+                .prepare(
+                  `
+DELETE
+FROM  tickets
+WHERE tickid = ?
+                  `
+                ).run(ticket.tickid)
+              
+              ticket = null;
+            }
+          }
 
-          const generated_id = random_id();
+          if(ticket !== null){
+            return interaction.reply({
+              content: "You already have an open verification ticket.",
+              ephemeral: true,
+            });
+          }
+        }
 
-          client.database
-            .prepare(
-              `
+        let JSON_answers = {
+          answers: [],
+        };
+
+        const generated_id = random_id();
+
+        client.database
+          .prepare(
+            `
 INSERT INTO tickets(tickid, userid, answers, guildid, io, moderatorid, channelid, threadid, completedmain)
 VALUES 
   (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `
-            )
-            .run(
-              generated_id,
-              interaction.member.id.toString(),
-              JSON.stringify(JSON_answers),
-              interaction.guild.id.toString(),
-              0,
-              -1,
-              interaction.channel.id.toString(),
-              -1,
-              0
+          )
+          .run(
+            generated_id,
+            interaction.member.id.toString(),
+            JSON.stringify(JSON_answers),
+            interaction.guild.id.toString(),
+            0,
+            -1,
+            interaction.channel.id.toString(),
+            -1,
+            0
+          );
+
+        
+        // Calculate the MAX autoarchiveduration
+
+        let boost_level = interaction.guild.premiumTier;
+
+        let MAX;
+        switch (boost_level){
+          case "NONE":
+            MAX = 1440;
+            break;
+          
+          case "TIER_1":
+            MAX = 4320;
+            break;
+
+          case "TIER_2":
+          case "TIER_3":
+            MAX = 10080;
+            break;
+        }
+
+        const new_thread = await interaction.channel.threads
+          .create({
+            name: "Verification Thread - " + generated_id,
+            autoArchiveDuration: MAX, // Set the archive duration to max based on the guild's features
+            reason: "Verification Thread",
+          })
+          .then((thread) => {
+            // Delete the "someone started a new thread" message
+            setTimeout(delete_thread_creation_message, 100, interaction);
+
+            // Update the thread id in the database
+            client.database
+              .prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`)
+              .run(thread.id, generated_id);
+
+            let JSON_object = JSON.parse(server_information.questions);
+            let thread_embed = new EmbedBuilder()
+              .setColor(0x2f3136)
+              .setTitle(interaction.guild.name + "'s Verification Ticket")
+              .setFooter({ text: `ID: ${generated_id}` });
+
+            if (JSON_object.questions.length > 1) {
+              thread_embed.setDescription(
+                `Please answer the following ${JSON_object.questions.length} questions to verify yourself`
+              );
+            } else {
+              thread_embed.setDescription(
+                `Please answer the following question to verify yourself`
+              );
+            }
+
+            const row = new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId(`proceed-${generated_id}`)
+                .setLabel("Proceed")
+                .setStyle(ButtonStyle.Success)
             );
 
-          const thread = await interaction.channel.threads
-            .create({
-              name: "Verification Thread - " + generated_id,
-              autoArchiveDuration: 'MAX', // Set the archive duration to max based on the guild's features
-              reason: "Verification Thread",
-            })
-            .then((thread) => {
-              // Delete the "someone started a new thread" message
-              setTimeout(delete_thread_creation_message, 100, interaction);
-
-              // Update the thread id in the database
-              client.database
-                .prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`)
-                .run(thread.id, generated_id);
-
-              let JSON_object = JSON.parse(server_information.questions);
-              let thread_embed = new EmbedBuilder()
-                .setColor(0x2f3136)
-                .setTitle(interaction.guild.name + "'s Verification Ticket")
-                .setFooter({ text: `ID: ${generated_id}` });
-
-              if (JSON_object.questions.length > 1) {
-                thread_embed.setDescription(
-                  `Please answer the following ${JSON_object.questions.length} questions to verify yourself`
-                );
-              } else {
-                thread_embed.setDescription(
-                  `Please answer the following question to verify yourself`
-                );
-              }
-
-              const row = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                  .setCustomId(`proceed-${generated_id}`)
-                  .setLabel("Proceed")
-                  .setStyle(ButtonStyle.Success)
-              );
-
-              thread.send({
-                embeds: [thread_embed],
-                components: [row],
-                content: interaction.member.toString(),
-              });
-
-              interaction.reply({
-                content: `A verification ticket has been created, ${thread.toString()}`,
-                ephemeral: true,
-              });
-
-              //thread.members.add(interaction);
+            thread.send({
+              embeds: [thread_embed],
+              components: [row],
+              content: interaction.member.toString(),
             });
-        } else {
-          return interaction.reply({
-            content: "You already have an open verification ticket.",
-            ephemeral: true,
+
+            interaction.reply({
+              content: `A verification ticket has been created, ${thread.toString()}`,
+              ephemeral: true,
+            });
+
+            //thread.members.add(interaction);
           });
-        }
       } else {
         // Thread question system has not been setup
 
@@ -257,10 +298,18 @@ VALUES
           captcha.drawCaptcha();
 
           // Save the captcha in the database
-          client.database.prepare(`
+          client.database
+            .prepare(
+              `
           INSERT INTO captcha (text, userid, guildid)
           VALUES (?, ?, ?)
-          `).run(captcha.text, interaction.member.id.toString(), interaction.guild.id.toString());
+          `
+            )
+            .run(
+              captcha.text,
+              interaction.member.id.toString(),
+              interaction.guild.id.toString()
+            );
 
           await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
 
@@ -295,7 +344,15 @@ VALUES
               This is not resilient, and needs to be improved in the future for scalability.
               It's only alive for 30 seconds, so it doesn't matter as of now.
               */
-              setTimeout(invalidate_captcha, 30000, client, interaction, interaction.member.id, interaction.guild.id, captcha.text);
+              setTimeout(
+                invalidate_captcha,
+                30000,
+                client,
+                interaction,
+                interaction.member.id,
+                interaction.guild.id,
+                captcha.text
+              );
             });
         } else {
           let role = interaction.guild.roles.cache.find(
