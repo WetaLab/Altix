@@ -102,7 +102,7 @@ Of course, Altix isn't perfect and we strive to perfect our system to better sui
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/7exe/Altix.git
+   git clone https://github.com/7exe/Altix.git && cd Altix
    ```
 2. Install NPM packages
    ```sh
