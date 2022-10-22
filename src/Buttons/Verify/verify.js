@@ -124,10 +124,10 @@ WHERE  userid = ?
 
         // Check if there is a ticket, and if so, does the ticket have a functional channel
         if (ticket) {
-          let channel = interaction.guild.channels.cache.get(ticket.channelid)
-          if(channel) {
-            let thread = channel.threads.cache.get(ticket.threadid)
-            if(!thread){
+          let channel = interaction.guild.channels.cache.get(ticket.channelid);
+          if (channel) {
+            let thread = channel.threads.cache.get(ticket.threadid);
+            if (!thread) {
               client.database
                 .prepare(
                   `
@@ -135,15 +135,27 @@ DELETE
 FROM  tickets
 WHERE tickid = ?
                   `
-                ).run(ticket.tickid)
-              
+                )
+                .run(ticket.tickid);
+
               ticket = null;
             }
           }
 
-          if(ticket !== null){
+          if (ticket !== null) {
+            // At this point, this "get thread" should just be turned into a function
+            let channel = interaction.guild.channels.cache.get(ticket.channelid);
+            let additional_information = ""; // Store this as an empty string for in-case of scenario
+            
+            // We don't need to run any checks as it has already been done
+
+            let thread = channel.threads.cache.get(ticket.threadid);
+            if(thread){
+              additional_information = thread.toString();
+            }
+
             return interaction.reply({
-              content: "You already have an open verification ticket.",
+              content: `You already have an open verification ticket. ${additional_information}`,
               ephemeral: true,
             });
           }
@@ -175,17 +187,16 @@ VALUES
             0
           );
 
-        
         // Calculate the MAX autoarchiveduration
 
         let boost_level = interaction.guild.premiumTier;
 
         let MAX;
-        switch (boost_level){
+        switch (boost_level) {
           case "NONE":
             MAX = 1440;
             break;
-          
+
           case "TIER_1":
             MAX = 4320;
             break;
