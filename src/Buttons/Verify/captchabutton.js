@@ -15,11 +15,13 @@ module.exports = {
       .get(interaction.guild.id.toString());
     if (!server_information) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
+        .setColor(0xffa500)
         .setDescription(
-          `There is no verification setup!\n Use /setup to create one`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `There is no verification setup!\n Use /setup to create one`,
+        });
       return interaction.reply({
         embeds: [Error],
         ephemeral: true,
@@ -38,9 +40,13 @@ module.exports = {
       );
     if (!captcha) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(`The captcha you entered is invalid!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `The captcha you entered is invalid!`,
+        });
       return interaction.reply({
         embeds: [Error],
         ephemeral: true,
@@ -54,9 +60,11 @@ module.exports = {
       )
     ) {
       const Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(`You've already been verified!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({ text: `You've already been verified!` });
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
 

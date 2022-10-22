@@ -22,9 +22,13 @@ module.exports = {
       !interaction.member.permissions.has(Modal.permission)
     ) {
       const Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Whoa there cowboy!")
-        .setDescription(`You don't have permission to do that!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `You don't have permission to do that!`,
+        });
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
 
@@ -39,7 +43,6 @@ module.exports = {
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }*/
     // Option not needed
-
 
     try {
       await Modal.execute(interaction, client);

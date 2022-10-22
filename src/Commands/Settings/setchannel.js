@@ -37,11 +37,13 @@ WHERE
 
     if (!database_response) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
+        .setColor(0xffa500)
         .setDescription(
-          `There is no verification setup!\n Use /setup to create one`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `There is no verification setup!\n Use /setup to create one`,
+        });
       return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
@@ -60,11 +62,11 @@ WHERE
       `
         )
         .run(channel.id.toString(), interaction.guild.id.toString());
-      
+
       let Response = new EmbedBuilder()
         .setColor(0xffffff)
         .setDescription(
-          `Verification review channel has sucessfully been updated.`
+          `<a:success:884527566688509982> | Verification review channel has sucessfully been updated.`
         );
       return interaction.followUp({
         embeds: [Response],

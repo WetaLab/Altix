@@ -18,11 +18,13 @@ module.exports = {
             !member.permissions.has(command.permission)
           ) {
             const Error = new EmbedBuilder()
-              .setColor(0xffffff)
-              .setTitle("Whoa there cowboy!")
+              .setColor(0xffa500)
               .setDescription(
-                `You do not have permission to run this command!`
-              );
+                "<a:warning1:890012010224431144> | An error has occured"
+              )
+              .setFooter({
+                text: `You do not have permission to run this command!`,
+              });
             return interaction.reply({ embeds: [Error], ephemeral: true });
           }
         }

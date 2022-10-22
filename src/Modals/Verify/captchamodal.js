@@ -29,8 +29,11 @@ module.exports = {
       let error_embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setDescription(
-          `***A serious error has occured***\nI do not have the permission to give you the verified role.`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `I do not have the permission to give you the verified role.`,
+        });
       return interaction.reply({
         embeds: [error_embed],
         ephemeral: true,
@@ -39,11 +42,13 @@ module.exports = {
       let error_embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setDescription(
-          `***A serious error has occured***\nPlease report this issue to Static#4371 if the issue persists.`
+          "<a:warning1:890012010224431144> | An error has occured"
         )
-        .setFooter(
-          `Error code -- ${error.code == undefined ? "Unknown, not diagnosed." : error.code}`
-        );
+        .setFooter({
+          text: `Please report this issue to Static#4371 if the issue persists. Error code -- ${
+            error.code == undefined ? "Unknown, not diagnosed." : error.code
+          }`,
+        });
 
       return interaction.reply({
         embeds: [error_embed],
@@ -85,8 +90,11 @@ module.exports = {
       let no_captcha = new EmbedBuilder()
         .setColor(0xffa500)
         .setDescription(
-          `***This captcha is no longer valid.***\nYou've completed this captcha, waited too long or you didn't answer it correctly.`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `Captcha Invalid. You've completed this captcha, waited too long or you didn't answer it correctly.`,
+        });
       return interaction.reply({
         embeds: [no_captcha],
         ephemeral: true,
@@ -195,16 +203,20 @@ module.exports = {
         await interaction.member.roles.add(role).then(() => {
           const Success = new EmbedBuilder()
             .setColor(0xffffff)
-            .setDescription(`Verification was successful!`);
+            .setDescription(
+              `<a:success:884527566688509982> | Verification was successful!`
+            );
           return interaction.reply({ embeds: [Success], ephemeral: true });
         });
       } else {
         const Error = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setTitle("Whoops!")
+          .setColor(0xffa500)
           .setDescription(
-            `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
-          );
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: `Seems like the verified role is missing\nYou might want to tell your local server administrators about this.`,
+          });
         return interaction.reply({ embeds: [Error], ephemeral: true });
       }
     } else {
@@ -223,8 +235,13 @@ module.exports = {
       // This can probably be more advanced, but I'll keep it like this for now
       if (thread_title.includes("Pending")) {
         let error_embed = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setDescription(`You've already completed this captcha!`);
+          .setColor(0xffa500)
+          .setDescription(
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: `You've already completed this captcha!`,
+          });
         return interaction.reply({ embeds: [error_embed], ephemeral: true });
       }
 

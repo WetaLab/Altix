@@ -29,8 +29,11 @@ module.exports = {
         let error_embed = new EmbedBuilder()
           .setColor(0xffa500)
           .setDescription(
-            `***A serious error has occured***\nI do not have the permission to give the verified role to the user.\nPlease grant me the permission.`
-          );
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: "I do not have the permission to give the verified role to the user.\nPlease grant me the correct permissions.",
+          });
         return interaction.reply({
           embeds: [error_embed],
           ephemeral: true,
@@ -39,8 +42,13 @@ module.exports = {
         let error_embed = new EmbedBuilder()
           .setColor(0xffa500)
           .setDescription(
-            `***A serious error has occured***\nPlease report this issue to Static#4371 if the issue persists.`
-          );
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: "Please report this issue to Static#4371 if the issue persists.",
+          });
+
+        // add some sort of error tracing/report for debug purposes
 
         return interaction.reply({
           embeds: [error_embed],
@@ -139,11 +147,13 @@ module.exports = {
         )
       ) {
         const Error = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setTitle("Something ain't right here!")
+          .setColor(0xffa500)
           .setDescription(
-            `I don't seem to have the proper access to verify this user`
-          );
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: "I don't seem to have the proper access to verify this user.",
+          });
         return interaction.reply({ embeds: [Error], ephemeral: true });
       }
 
@@ -238,11 +248,11 @@ module.exports = {
           });
       } else {
         const Error = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setTitle("Whoops!")
-          .setDescription(
-            `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
-          );
+          .setColor(0xffa500)
+          .setDescription("<a:warning1:890012010224431144> | An error has occured")
+          .setFooter({
+            text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
+          });
         return interaction.reply({ embeds: [Error], ephemeral: true });
       }
     });

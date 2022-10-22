@@ -1,7 +1,6 @@
 const { EmbedBuilder, PermissionsBitField } = require("discordjs-latest");
 const { invalidate_all_tickets } = require("../../lib/utils.js"); // Load the utils library
 
-
 module.exports = {
   name: "removequestion",
   description: "Remove a question from the verification process.",
@@ -22,11 +21,13 @@ module.exports = {
       .get(interaction.guild.id.toString());
     if (!server_information) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
+        .setColor(0xffa500)
         .setDescription(
-          `There is no verification setup!\n Use /setup to create one`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `There is no verification setup!\n Use /setup to create one`,
+        });
       return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
@@ -40,21 +41,31 @@ module.exports = {
       .then((review_channel) => {
         if (!review_channel) {
           let Response = new EmbedBuilder()
-            .setColor(0xffffff)
-            .setTitle("Something ain't right here!")
+            .setColor(0xffa500)
             .setDescription(
-              `The reviewer channel is either not set, or doesn't exist!`
-            );
+              "<a:warning1:890012010224431144> | An error has occured"
+            )
+            .setFooter({
+              text: `The reviewer channel is either not set, or doesn't exist!`,
+            });
           return interaction.followUp({
             embeds: [Response],
             ephemeral: true,
           });
         }
-        if (question > JSON.parse(server_information.questions).questions.length || question <= 0) {
+        if (
+          question >
+            JSON.parse(server_information.questions).questions.length ||
+          question <= 0
+        ) {
           let Response = new EmbedBuilder()
-            .setColor(0xffffff)
-            .setTitle("Something ain't right here!")
-            .setDescription(`The question number you entered does not exist!`);
+            .setColor(0xffa500)
+            .setDescription(
+              "<a:warning1:890012010224431144> | An error has occured"
+            )
+            .setFooter({
+              text: `The question number you entered does not exist!`,
+            });
           return interaction.followUp({
             embeds: [Response],
             ephemeral: true,
@@ -68,11 +79,13 @@ module.exports = {
           JSON_object = JSON.stringify(JSON_object);
         } catch (e) {
           let Response = new EmbedBuilder()
-            .setColor(0xffffff)
-            .setTitle("Something went wrong!")
+            .setColor(0xffa500)
             .setDescription(
-              `We were unable to remove the question due to an error.`
-            );
+              "<a:warning1:890012010224431144> | An error has occured"
+            )
+            .setFooter({
+              text: `I were unable to remove the question due to an error.`,
+            });
           return interaction.followUp({
             embeds: [Response],
             ephemeral: true,
@@ -84,7 +97,7 @@ module.exports = {
         let Response = new EmbedBuilder()
           .setColor(0xffffff)
           .setDescription(
-            `Sucessfully removed question \`${question}\` from the verification process.`
+            `<a:success:884527566688509982> | Sucessfully removed question \`${question}\` from the verification process.`
           );
         invalidate_all_tickets(client, interaction.guild.id, interaction.guild);
         return interaction.followUp({
