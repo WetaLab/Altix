@@ -6,7 +6,11 @@ const {
   ButtonStyle,
 } = require("discordjs-latest");
 
-const { create_time_warning, invalidate_specific_ticket, calculate_future_time } = require("../../lib/utils.js"); // Load the utils library
+const {
+  create_time_warning,
+  invalidate_specific_ticket,
+  calculate_future_time,
+} = require("../../lib/utils.js"); // Load the utils library
 
 module.exports = {
   id: "proceed",
@@ -81,15 +85,22 @@ module.exports = {
 
     // Send the first question to the user, the rest will be handled by messageCreate.js
 
-    if(questions.length == 0) {
+    if (questions.length == 0) {
       let error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setDescription("No questions have been set up for this server!")
-        .setFooter({ text: `ID: ${ticket_id}` });
-      
-      interaction.member.send({ embeds: [error] }).catch(() => {})
+        .setColor(0xffa500)
+        .setDescription("<a:warning1:890012010224431144> | An error has occured")
+        .setFooter({ text: "No questions have been set up for this server!" })
+        .setAuthor({
+          name: interaction.guild.name,
+          iconURL: interaction.guild.iconURL(),
+        })
+        .setTimestamp();
+
+      interaction.member.send({ embeds: [error] }).catch(() => {});
       // Delete ticket
-      client.database.prepare(`DELETE FROM tickets WHERE tickid = ?`).run(ticket_id);
+      client.database
+        .prepare(`DELETE FROM tickets WHERE tickid = ?`)
+        .run(ticket_id);
       // Delete thread
       return interaction.channel.delete();
     }
@@ -115,21 +126,39 @@ module.exports = {
             .setDisabled(true)
             .setStyle(ButtonStyle.Success)
         );
-        interaction.message.edit({
-          components: [row],
-        }).catch(() => {});
+        interaction.message
+          .edit({
+            components: [row],
+          })
+          .catch(() => {});
         interaction.deferUpdate();
         client.database
           .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
           .run(ticket_id);
 
         // Setup time limit for 15/30 minutes
-        setTimeout(create_time_warning, 15 * 60 * 1000, client, ticket_id, interaction.guild);
-        setTimeout(invalidate_specific_ticket, 30 * 60 * 1000, client, ticket_id, interaction.guild);
+        setTimeout(
+          create_time_warning,
+          15 * 60 * 1000,
+          client,
+          ticket_id,
+          interaction.guild
+        );
+        setTimeout(
+          invalidate_specific_ticket,
+          30 * 60 * 1000,
+          client,
+          ticket_id,
+          interaction.guild
+        );
 
         // Store in database for resiliency
-        client.database.prepare(`UPDATE tickets SET timefifteen = ? WHERE tickid = ?`).run(calculate_future_time(15).toString(), ticket_id);
-        client.database.prepare(`UPDATE tickets SET timethirty = ? WHERE tickid = ?`).run(calculate_future_time(30).toString(), ticket_id);
+        client.database
+          .prepare(`UPDATE tickets SET timefifteen = ? WHERE tickid = ?`)
+          .run(calculate_future_time(15).toString(), ticket_id);
+        client.database
+          .prepare(`UPDATE tickets SET timethirty = ? WHERE tickid = ?`)
+          .run(calculate_future_time(30).toString(), ticket_id);
       });
   },
 };

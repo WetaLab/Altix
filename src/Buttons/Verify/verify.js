@@ -13,6 +13,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  Embed,
 } = require("discordjs-latest");
 
 const { writeFileSync, unlinkSync } = require("fs");
@@ -73,11 +74,13 @@ WHERE
         )
       ) {
         const Error = new EmbedBuilder()
-          .setColor(0xffffff)
-          .setTitle("Something ain't right here!")
+          .setColor(0xffa500)
           .setDescription(
-            `I don't seem to have the proper access to verify you`
-          );
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: `I don't seem to have the proper access to verify you`,
+          });
         return interaction.reply({ embeds: [Error], ephemeral: true });
       }
 
@@ -144,13 +147,15 @@ WHERE tickid = ?
 
           if (ticket !== null) {
             // At this point, this "get thread" should just be turned into a function
-            let channel = interaction.guild.channels.cache.get(ticket.channelid);
+            let channel = interaction.guild.channels.cache.get(
+              ticket.channelid
+            );
             let additional_information = ""; // Store this as an empty string for in-case of scenario
-            
+
             // We don't need to run any checks as it has already been done
 
             let thread = channel.threads.cache.get(ticket.threadid);
-            if(thread){
+            if (thread) {
               additional_information = thread.toString();
             }
 
@@ -159,6 +164,29 @@ WHERE tickid = ?
               ephemeral: true,
             });
           }
+        }
+
+        // Is the review channel existant?
+        if (
+          server_information.channel &&
+          interaction.guild.channels.cache.get(server_information.channel)
+        ) {
+          // All good
+        } else {
+          // New embed format style standard?
+          let non_existant_channel_error = new EmbedBuilder()
+            .setColor(0xffa500)
+            .setDescription(
+              "<a:warning1:890012010224431144> | An error has occured"
+            )
+            .setFooter({
+              text: "You can't send a verification tickets to the void! The review channel doesn't exist, ask a server administrator to run /setchannel",
+            });
+
+          return interaction.reply({
+            embeds: [non_existant_channel_error],
+            ephemeral: true,
+          });
         }
 
         let JSON_answers = {
@@ -375,7 +403,9 @@ VALUES
               .then(() => {
                 const Success = new EmbedBuilder()
                   .setColor(0xffffff)
-                  .setDescription(`Verification was successful!`);
+                  .setDescription(
+                    `<a:success:884527566688509982> | Verification was successful!`
+                  );
                 return interaction.reply({
                   embeds: [Success],
                   ephemeral: true,
@@ -387,8 +417,11 @@ VALUES
                   const Error = new EmbedBuilder()
                     .setColor(0xffa500)
                     .setDescription(
-                      `I don't seem to have the proper access to verify you`
-                    );
+                      "<a:warning1:890012010224431144> | An error has occured"
+                    )
+                    .setFooter({
+                      text: `I don't seem to have the proper access to verify you`,
+                    });
                   return interaction.reply({
                     embeds: [Error],
                     ephemeral: true,
@@ -397,8 +430,11 @@ VALUES
                   const Error = new EmbedBuilder()
                     .setColor(0xffa500)
                     .setDescription(
-                      `An error occured while trying to verify you`
-                    );
+                      "<a:warning1:890012010224431144> | An error has occured"
+                    )
+                    .setFooter({
+                      text: `An error occured while trying to verify you`,
+                    });
                   return interaction.reply({
                     embeds: [Error],
                     ephemeral: true,
@@ -407,20 +443,24 @@ VALUES
               });
           } else {
             const Error = new EmbedBuilder()
-              .setColor(0xffffff)
-              .setTitle("Whoops!")
+              .setColor(0xffa500)
               .setDescription(
-                `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
-              );
+                "<a:warning1:890012010224431144> | An error has occured"
+              )
+              .setFooter({
+                text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`,
+              });
             return interaction.reply({ embeds: [Error], ephemeral: true });
           }
         }
       }
     } else {
       const Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(`You've already been verified!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({ text: `You've already been verified!` });
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
   },

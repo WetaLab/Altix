@@ -34,12 +34,16 @@ module.exports = {
   ],
 
   async execute(client, interaction) {
-    console.log(interaction.channel.isThread())
-    if(interaction.channel.isThread()) {
+    console.log(interaction.channel.isThread());
+    if (interaction.channel.isThread()) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(`You can't use this command in a thread!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `You can't use this command in a thread!`,
+        });
       return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
@@ -101,7 +105,12 @@ VALUES
   (?, ?, ?, ?)
     `
             )
-            .run(interaction.guild.id.toString(), "", channel.id.toString(), role.name);
+            .run(
+              interaction.guild.id.toString(),
+              "",
+              channel.id.toString(),
+              role.name
+            );
         } else {
           client.database
             .prepare(
@@ -115,7 +124,11 @@ WHERE
   guildid = ?
         `
             )
-            .run(role.name, channel.id.toString(), interaction.guild.id.toString());
+            .run(
+              role.name,
+              channel.id.toString(),
+              interaction.guild.id.toString()
+            );
         }
       });
   },

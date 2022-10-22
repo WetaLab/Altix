@@ -16,10 +16,10 @@ module.exports = {
 
   async execute(client, interaction) {
     let enable = interaction.options.getBoolean("enable");
-    if(enable){
-        enable = 1;
-    }else{
-        enable = 0;
+    if (enable) {
+      enable = 1;
+    } else {
+      enable = 0;
     }
     // Make sure that there is an verification entry
     let database_response = client.database
@@ -36,11 +36,13 @@ WHERE
 
     if (!database_response) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
+        .setColor(0xffa500)
         .setDescription(
-          `There is no verification setup!\n Use /setup to create one`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `There is no verification setup!\n Use /setup to create one`,
+        });
       return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
@@ -63,7 +65,9 @@ WHERE
       let Response = new EmbedBuilder()
         .setColor(0xffffff)
         .setDescription(
-          `The captcha system has been ${enable ? "enabled" : "disabled"}`
+          `<a:success:884527566688509982> | The captcha system has been ${
+            enable ? "enabled" : "disabled"
+          }`
         );
       return interaction.followUp({
         embeds: [Response],

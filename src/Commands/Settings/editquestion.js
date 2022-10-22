@@ -1,7 +1,6 @@
 const { EmbedBuilder, PermissionsBitField } = require("discordjs-latest");
 const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
 
-
 module.exports = {
   name: "editquestion",
   permission: PermissionsBitField.Flags.Administrator,
@@ -32,13 +31,15 @@ module.exports = {
     const regex_to_replace = new RegExp("/n", "g");
 
     let question = interaction.options.getInteger("id");
-    const question_text = sanitize_string(interaction.options.getString("question").replace(regex_to_replace, "\n"));
+    const question_text = sanitize_string(
+      interaction.options.getString("question").replace(regex_to_replace, "\n")
+    );
     let specifics = interaction.options.getString("specifics");
 
-    if(!specifics) {
-        specifics = "";
-    }else{
-        specifics = sanitize_string(specifics.replace(regex_to_replace, "\n"));
+    if (!specifics) {
+      specifics = "";
+    } else {
+      specifics = sanitize_string(specifics.replace(regex_to_replace, "\n"));
     }
 
     let server_information = client.database
@@ -46,11 +47,13 @@ module.exports = {
       .get(interaction.guild.id.toString());
     if (!server_information) {
       let Error = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
+        .setColor(0xffa500)
         .setDescription(
-          `There is no verification setup!\n Use /setup to create one`
-        );
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({
+          text: `There is no verification setup!\n Use /setup to create one`,
+        });
       return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
@@ -61,9 +64,11 @@ module.exports = {
       question <= 0
     ) {
       let Response = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setTitle("Something ain't right here!")
-        .setDescription(`The question number you entered does not exist!`);
+        .setColor(0xffa500)
+        .setDescription(
+          "<a:warning1:890012010224431144> | An error has occured"
+        )
+        .setFooter({ text: `The question number you entered does not exist!` });
       return interaction.followUp({
         embeds: [Response],
         ephemeral: true,
@@ -74,15 +79,16 @@ module.exports = {
     JSON_object.questions[question - 1].content = question_text;
     JSON_object.questions[question - 1].specifics = specifics;
     client.database
-        .prepare(
-            `UPDATE verifysettings SET questions = ? WHERE guildid = ?`
-        ).run(JSON.stringify(JSON_object), interaction.guild.id.toString());
+      .prepare(`UPDATE verifysettings SET questions = ? WHERE guildid = ?`)
+      .run(JSON.stringify(JSON_object), interaction.guild.id.toString());
     let Response = new EmbedBuilder()
-        .setColor(0xffffff)
-        .setDescription(`Question \`${question}\` has been updated!`);
+      .setColor(0xffffff)
+      .setDescription(
+        `<a:success:884527566688509982> | Question \`${question}\` has been updated!`
+      );
     return interaction.followUp({
-        embeds: [Response],
-        ephemeral: true,
+      embeds: [Response],
+      ephemeral: true,
     });
   },
 };
