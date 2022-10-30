@@ -108,9 +108,10 @@ Of course, Altix isn't perfect and we strive to perfect our system to better sui
    ```sh
    npm install
    ```
-3. Export your application token
+3. Export your application token and ID
    ```sh
    export TOKEN=Example-token
+   export APPID=Application-ID
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
