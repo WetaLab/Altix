@@ -180,7 +180,7 @@ WHERE tickid = ?
               "<a:warning1:890012010224431144> | An error has occured"
             )
             .setFooter({
-              text: "You can't send a verification tickets to the void! The review channel doesn't exist, ask a server administrator to run /setchannel",
+              text: "You can't send verification tickets to the void! The review channel doesn't exist, ask a server administrator to run /setchannel",
             });
 
           return interaction.reply({
