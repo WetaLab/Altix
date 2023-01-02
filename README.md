@@ -67,10 +67,10 @@
 Are you tired of trying out different verification bots that are either too complex to set up or lack the features you need? Look no further, because Altix is here to meet all your verification needs.
 
 Here's why:
-* <b>Easy setup</b> | With just a single command, you can have Altix up and running in no time.
-* <b>Customizable</b> | Altix lets you tailor every aspect of the bot to your specific needs and preferences.
-* <b>Ready to go</b> | Instead of being bogged down by unnecessary and hard-to-configure features, Altix is designed to be simple and intuitive from the start.
-* <b>Constantly improving</b> | We know Altix isn't perfect and we're always working to make it better for our users.
+* <b>Easy setup</b>: With just a single command, you can have Altix up and running in no time.
+* <b>Customizable</b>: Altix lets you tailor every aspect of the bot to your specific needs and preferences.
+* <b>Ready to go</b>: Instead of being bogged down by unnecessary and hard-to-configure features, Altix is designed to be simple and intuitive from the start.
+* <b>Constantly improving</b>: We know Altix isn't perfect and we're always working to make it better for our users.
 
 <i>Altix's core principles were designed after Sno's Wuffer</i>
 
