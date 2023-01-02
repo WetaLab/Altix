@@ -167,6 +167,7 @@ module.exports = {
       let accept_embed = new EmbedBuilder()
         .setColor(0x00ff00)
         .setTitle("Verification Review")
+        .setDescription(`Accepted by: ${interaction.member.toString()}`)
         .setAuthor({
           name: user.tag,
           iconURL: user.displayAvatarURL(),

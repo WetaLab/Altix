@@ -68,6 +68,7 @@ module.exports = {
       let deny_embed = new EmbedBuilder()
         .setColor(0xff0000)
         .setTitle("Verification Review")
+        .setDescription(`Rejected by: ${interaction.member.toString()}`)
         .setAuthor({
           name: user.tag,
           iconURL: user.displayAvatarURL(),
