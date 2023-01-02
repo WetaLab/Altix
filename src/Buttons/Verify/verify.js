@@ -13,6 +13,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   Embed,
 } = require("discordjs-latest");
 
@@ -26,13 +27,6 @@ const random_id = () => {
   return Math.floor(Math.random() * 10000000000000);
 };
 
-const delete_thread_creation_message = (interaction) => {
-  interaction.channel.messages.fetch({ limit: 1 }).then((messageMappings) => {
-    let messages = Array.from(messageMappings.values());
-    let previousMessage = messages[0];
-    previousMessage.delete();
-  });
-};
 
 module.exports = {
   id: "verifybutton",
@@ -240,10 +234,9 @@ VALUES
             name: "Verification Thread - " + generated_id,
             autoArchiveDuration: MAX, // Set the archive duration to max based on the guild's features
             reason: "Verification Thread",
+            type: ChannelType.PrivateThread,
           })
           .then((thread) => {
-            // Delete the "someone started a new thread" message
-            setTimeout(delete_thread_creation_message, 100, interaction);
 
             // Update the thread id in the database
             client.database
