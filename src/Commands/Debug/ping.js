@@ -1,9 +1,6 @@
 const {
   EmbedBuilder,
-  PermissionsBitField,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
+  PermissionsBitField
 } = require("discordjs-latest");
 
 module.exports = {
@@ -22,7 +19,7 @@ module.exports = {
     const hours = uptime_hours % 24;
     const days = Math.floor(uptime_hours / 24);
 
-    const ping_embed = new Discord.MessageEmbed()
+    const ping_embed = new EmbedBuilder()
       .setColor("#FFFFFF")
       .setTitle(":ping_pong: Pong!")
       .addFields(
