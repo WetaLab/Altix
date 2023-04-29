@@ -25,7 +25,7 @@ module.exports = {
       .addFields(
         {
           name: "`Bot Latency`",
-          value: `${new Date().getTime() - message.createdTimestamp} ms`,
+          value: `${new Date().getTime() - interaction.createdTimestamp} ms`,
         },
         {
           name: "`API Latency`",
