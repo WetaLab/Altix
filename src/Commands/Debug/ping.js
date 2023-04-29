@@ -7,8 +7,8 @@ const {
 } = require("discordjs-latest");
 
 module.exports = {
-  name: "addquestion",
-  description: "Add a new question to an existing verification process",
+  name: "ping",
+  description: "Get the statistics of how the bot is doing.",
   permission: PermissionsBitField.Flags.Administrator,
   ephemeral: false,
   options: [],
