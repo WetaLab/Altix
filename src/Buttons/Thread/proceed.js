@@ -14,7 +14,7 @@ const {
 
 module.exports = {
   id: "proceed",
-
+  ephemeral: true,
   /*async rollback(interaction, client, error) {
     // In case of error, rollback the interaction.
   },*/

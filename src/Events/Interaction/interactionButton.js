@@ -26,6 +26,12 @@ module.exports = {
       return interaction.reply({ embeds: [Error], ephemeral: true });
     }
 
+    if (Button.ephemeral) {
+      await interaction.deferReply({ ephemeral: true }).catch(() => {});
+    } else {
+      await interaction.deferReply({ ephemeral: false }).catch(() => {});
+    }
+
     /*if (
       Button.ownerOnly &&
       interaction.member.id !== interaction.guild.ownerId

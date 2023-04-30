@@ -2,6 +2,7 @@ const { PermissionsBitField, ActionRowBuilder, ModalBuilder, TextInputBuilder, T
 
 module.exports = {
   id: "reject",
+  ephemeral: true,
   permission: PermissionsBitField.Flags.ManageRoles,
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);

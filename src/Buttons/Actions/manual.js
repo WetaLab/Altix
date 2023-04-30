@@ -9,6 +9,7 @@ const {
 module.exports = {
   id: "manual",
   permission: PermissionsBitField.Flags.ManageRoles,
+  ephemeral: true,
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);
     let ticket = client.database
