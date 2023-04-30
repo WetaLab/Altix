@@ -9,7 +9,7 @@ const {
 module.exports = {
   id: "accept",
   permission: PermissionsBitField.Flags.ManageRoles,
-
+  ephemeral: true,
   async rollback(client, interaction, error) {
     /* 
       NOTE NOTE NOTE!
