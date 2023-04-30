@@ -131,7 +131,7 @@ module.exports = {
             components: [row],
           })
           .catch(() => {});
-        interaction.deferUpdate();
+        interaction.followUp();
         client.database
           .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
           .run(ticket_id);
