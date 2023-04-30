@@ -10,6 +10,7 @@ module.exports = {
   id: "accept",
   permission: PermissionsBitField.Flags.ManageRoles,
   ephemeral: true,
+  defer: false,
   async rollback(client, interaction, error) {
     /* 
       NOTE NOTE NOTE!
@@ -34,7 +35,7 @@ module.exports = {
           .setFooter({
             text: "I do not have the permission to give the verified role to the user.\nPlease grant me the correct permissions.",
           });
-        return interaction.followUp({
+        return interaction.reply({
           embeds: [error_embed],
           ephemeral: true,
         });
@@ -50,7 +51,7 @@ module.exports = {
 
         // add some sort of error tracing/report for debug purposes
 
-        return interaction.followUp({
+        return interaction.reply({
           embeds: [error_embed],
           ephemeral: true,
         });
@@ -128,7 +129,7 @@ module.exports = {
       .prepare(`SELECT * FROM tickets WHERE tickid = ?`)
       .get(ticket_id);
     if (!ticket) {
-      return interaction.followUp({
+      return interaction.reply({
         content: "Ticket no longer exists.",
         ephemeral: true,
       });
@@ -154,11 +155,11 @@ module.exports = {
           .setFooter({
             text: "I don't seem to have the proper access to verify this user.",
           });
-        return interaction.followUp({ embeds: [Error], ephemeral: true });
+        return interaction.reply({ embeds: [Error], ephemeral: true });
       }
 
       if (!user) {
-        return interaction.followUp({
+        return interaction.reply({
           content: "User no longer exists.",
           ephemeral: true,
         });
@@ -254,7 +255,7 @@ module.exports = {
           .setFooter({
             text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
           });
-        return interaction.followUp({ embeds: [Error], ephemeral: true });
+        return interaction.reply({ embeds: [Error], ephemeral: true });
       }
     });
   },
