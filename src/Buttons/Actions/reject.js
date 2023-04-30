@@ -32,6 +32,6 @@ module.exports = {
 
     modal.addComponents(row);
     await interaction.showModal(modal).catch(() => {})
-    interaction.deferUpdate().catch(() => {});
+    // interaction.deferUpdate().catch(() => {});
   },
 };
