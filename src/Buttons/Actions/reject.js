@@ -11,7 +11,7 @@ module.exports = {
       .get(ticket_id);
 
     if (!ticket) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "Ticket no longer exists.",
         ephemeral: true,
       });

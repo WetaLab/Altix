@@ -50,7 +50,7 @@ WHERE
       .get(interaction.guild.id.toString());
 
     if (!server_information) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "This verification process no longer exists",
         ephemeral: true,
       });
@@ -76,7 +76,7 @@ WHERE
           .setFooter({
             text: `I don't seem to have the proper access to verify you`,
           });
-        return interaction.reply({ embeds: [Error], ephemeral: true });
+        return interaction.followUp({ embeds: [Error], ephemeral: true });
       }
 
       // Check if the thread verification system is needed
@@ -154,7 +154,7 @@ WHERE tickid = ?
               additional_information = thread.toString();
             }
 
-            return interaction.reply({
+            return interaction.followUp({
               content: `You already have an open verification ticket. ${additional_information}`,
               ephemeral: true,
             });
@@ -178,7 +178,7 @@ WHERE tickid = ?
               text: "You can't send verification tickets to the void! The review channel doesn't exist, ask a server administrator to run /setchannel",
             });
 
-          return interaction.reply({
+          return interaction.followUp({
             embeds: [non_existant_channel_error],
             ephemeral: true,
           });
@@ -273,7 +273,7 @@ VALUES
               content: interaction.member.toString(),
             });
 
-            interaction.reply({
+            interaction.followUp({
               content: `A verification ticket has been created, ${thread.toString()}`,
               ephemeral: true,
             });
@@ -318,7 +318,7 @@ VALUES
               .setColor(0xffa500)
               .setDescription("You already have a captcha, please solve it");
 
-            return interaction.reply({
+            return interaction.followUp({
               embeds: [captcha_embed],
               ephemeral: true,
             });
@@ -363,7 +363,7 @@ VALUES
           );
 
           return await interaction
-            .reply({
+            .followUp({
               embeds: [embed],
               files: [`./captcha_${captcha.text}.png`],
               ephemeral: true,
@@ -400,7 +400,7 @@ VALUES
                   .setDescription(
                     `<a:success:884527566688509982> | Verification was successful!`
                   );
-                return interaction.reply({
+                return interaction.followUp({
                   embeds: [Success],
                   ephemeral: true,
                 });
@@ -416,7 +416,7 @@ VALUES
                     .setFooter({
                       text: `I don't seem to have the proper access to verify you`,
                     });
-                  return interaction.reply({
+                  return interaction.followUp({
                     embeds: [Error],
                     ephemeral: true,
                   });
@@ -429,7 +429,7 @@ VALUES
                     .setFooter({
                       text: `An error occured while trying to verify you`,
                     });
-                  return interaction.reply({
+                  return interaction.followUp({
                     embeds: [Error],
                     ephemeral: true,
                   });
@@ -444,7 +444,7 @@ VALUES
               .setFooter({
                 text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`,
               });
-            return interaction.reply({ embeds: [Error], ephemeral: true });
+            return interaction.followUp({ embeds: [Error], ephemeral: true });
           }
         }
       }
@@ -455,7 +455,7 @@ VALUES
           "<a:warning1:890012010224431144> | An error has occured"
         )
         .setFooter({ text: `You've already been verified!` });
-      return interaction.reply({ embeds: [Error], ephemeral: true });
+      return interaction.followUp({ embeds: [Error], ephemeral: true });
     }
   },
 };

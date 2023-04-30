@@ -26,21 +26,21 @@ module.exports = {
       .get(ticket_id);
 
     if (!ticket) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "Ticket not valid!",
         ephemeral: true,
       });
     }
 
     if (!(ticket.userid == interaction.member.id.toString())) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "You are not the owner of this ticket!",
         ephemeral: true,
       });
     }
 
     if (!ticket.io == 0 || !ticket.active == 0) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "You're already in an active session!",
         ephemeral: true,
       });
