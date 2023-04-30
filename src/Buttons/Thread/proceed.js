@@ -15,6 +15,7 @@ const {
 module.exports = {
   id: "proceed",
   ephemeral: true,
+  defer: false,
   /*async rollback(interaction, client, error) {
     // In case of error, rollback the interaction.
   },*/
@@ -26,21 +27,21 @@ module.exports = {
       .get(ticket_id);
 
     if (!ticket) {
-      return interaction.followUp({
+      return interaction.reply({
         content: "Ticket not valid!",
         ephemeral: true,
       });
     }
 
     if (!(ticket.userid == interaction.member.id.toString())) {
-      return interaction.followUp({
+      return interaction.reply({
         content: "You are not the owner of this ticket!",
         ephemeral: true,
       });
     }
 
     if (!ticket.io == 0 || !ticket.active == 0) {
-      return interaction.followUp({
+      return interaction.reply({
         content: "You're already in an active session!",
         ephemeral: true,
       });
@@ -131,7 +132,8 @@ module.exports = {
             components: [row],
           })
           .catch(() => {});
-        interaction.followUp();
+        //interaction.reply();
+        interaction.deferUpdate();
         client.database
           .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
           .run(ticket_id);

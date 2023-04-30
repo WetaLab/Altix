@@ -31,6 +31,7 @@ const random_id = () => {
 module.exports = {
   id: "verifybutton",
   ephemeral: true,
+  defer: true,
   async execute(interaction, client) {
     /*interaction.reply({
       content: "This is the point of which this bot would start your verification process",

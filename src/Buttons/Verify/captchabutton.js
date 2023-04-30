@@ -9,6 +9,7 @@ const {
 module.exports = {
   id: "captchabutton",
   ephemeral: true,
+  defer: false,
   async execute(interaction, client) {
     let captcha_answer = interaction.customId.split("-")[1];
     let server_information = client.database
@@ -83,7 +84,7 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(textInput);
     modal.addComponents(row);
 
-    await interaction.showModal(modal).catch(() => {});
+    await interaction.showModal(modal).catch((err) => {console.log(err)});
     // interaction.deferUpdate().catch(() => {});
   },
 };

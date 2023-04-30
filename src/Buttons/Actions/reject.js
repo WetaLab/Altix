@@ -4,6 +4,7 @@ module.exports = {
   id: "reject",
   ephemeral: true,
   permission: PermissionsBitField.Flags.ManageRoles,
+  defer: false,
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);
     let ticket = client.database

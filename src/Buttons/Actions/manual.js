@@ -10,6 +10,7 @@ module.exports = {
   id: "manual",
   permission: PermissionsBitField.Flags.ManageRoles,
   ephemeral: true,
+  defer: false,
   async execute(interaction, client) {
     let ticket_id = parseInt(interaction.customId.split("-")[1]);
     let ticket = client.database
@@ -17,7 +18,7 @@ module.exports = {
       .get(ticket_id);
 
     if (!ticket) {
-      return interaction.followUp({
+      return interaction.reply({
         content: "Ticket no longer exists.",
         ephemeral: true,
       });
@@ -32,7 +33,7 @@ module.exports = {
     // Add the moderator to the ticket & thread
     let user = client.users.fetch(ticket.userid).then(async (user) => {
       if (!user) {
-        return interaction.followUp({
+        return interaction.reply({
           content: "User no longer exists.",
           ephemeral: true,
         });
@@ -99,12 +100,12 @@ module.exports = {
           thread.members.add(interaction.member.id);
 
           // await interaction.deferReply({ephemeral: true});
-          interaction.followUp({
+          interaction.reply({
             content: "You have been added to the thread. " + thread.toString(),
             ephemeral: true,
           });
         } else {
-          return interaction.followUp({
+          return interaction.reply({
             content: "Thread no longer exists.",
             ephemeral: true,
           });
