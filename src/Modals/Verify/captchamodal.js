@@ -34,7 +34,7 @@ module.exports = {
         .setFooter({
           text: `I do not have the permission to give you the verified role.`,
         });
-      return interaction.reply({
+      return interaction.followUp({
         embeds: [error_embed],
         ephemeral: true,
       });
@@ -50,7 +50,7 @@ module.exports = {
           }`,
         });
 
-      return interaction.reply({
+      return interaction.followUp({
         embeds: [error_embed],
         ephemeral: true,
       });
@@ -59,7 +59,7 @@ module.exports = {
 
   async execute(interaction, client) {
     let captcha_correct = interaction.customId.split("-")[1];
-
+    interaction.deferReply({ ephemeral: true }).catch(() => {});
     // Check if in thread verification
     let is_thread_verification = false;
     try {
@@ -95,7 +95,7 @@ module.exports = {
         .setFooter({
           text: `Captcha Invalid. You've completed this captcha, waited too long or you didn't answer it correctly.`,
         });
-      return interaction.reply({
+      return interaction.followUp({
         embeds: [no_captcha],
         ephemeral: true,
       });
@@ -169,7 +169,7 @@ module.exports = {
       );
 
       return interaction
-        .reply({
+        .followUp({
           files: [`./captcha_${captcha.text}.png`],
           embeds: [embed],
           ephemeral: true,
@@ -206,7 +206,7 @@ module.exports = {
             .setDescription(
               `<a:success:884527566688509982> | Verification was successful!`
             );
-          return interaction.reply({ embeds: [Success], ephemeral: true });
+          return interaction.followUp({ embeds: [Success], ephemeral: true });
         });
       } else {
         const Error = new EmbedBuilder()
@@ -217,14 +217,14 @@ module.exports = {
           .setFooter({
             text: `Seems like the verified role is missing\nYou might want to tell your local server administrators about this.`,
           });
-        return interaction.reply({ embeds: [Error], ephemeral: true });
+        return interaction.followUp({ embeds: [Error], ephemeral: true });
       }
     } else {
       let ticket = client.database
         .prepare(`SELECT * FROM tickets WHERE tickid = ?`)
         .get(parseInt(interaction.channel.name.split("- ")[1]));
       if (!ticket) {
-        return interaction.reply("Ticket not found");
+        return interaction.followUp("Ticket not found");
       }
 
       let thread_title = interaction.channel.name;
@@ -242,7 +242,7 @@ module.exports = {
           .setFooter({
             text: `You've already completed this captcha!`,
           });
-        return interaction.reply({ embeds: [error_embed], ephemeral: true });
+        return interaction.followUp({ embeds: [error_embed], ephemeral: true });
       }
 
       // Lock the component
