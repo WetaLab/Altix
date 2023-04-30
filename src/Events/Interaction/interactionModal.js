@@ -51,10 +51,14 @@ module.exports = {
       if (Modal.rollback) {
         Modal.rollback(client, interaction, error);
       } else {
-        interaction.reply({
-          content: "A critical error has occured while running this action.",
-          ephemeral: true,
-        });
+        try {
+          interaction.reply({
+            content: "A critical error has occured while running this action.",
+            ephemeral: true,
+          });
+        } catch (error) {
+          console.log("Failed to send error message", error);
+        }
       }
     }
   },

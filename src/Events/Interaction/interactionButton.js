@@ -51,7 +51,7 @@ module.exports = {
             ephemeral: true,
           });
         } catch (error) {
-          console.log("Failed to send error message")
+          console.log("Failed to send error message", error);
         }
       }
     }
