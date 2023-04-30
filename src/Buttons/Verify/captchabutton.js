@@ -23,7 +23,7 @@ module.exports = {
         .setFooter({
           text: `There is no verification setup!\n Use /setup to create one`,
         });
-      return interaction.reply({
+      return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
       });
@@ -48,7 +48,7 @@ module.exports = {
         .setFooter({
           text: `The captcha you entered is invalid!`,
         });
-      return interaction.reply({
+      return interaction.followUp({
         embeds: [Error],
         ephemeral: true,
       });
@@ -66,7 +66,7 @@ module.exports = {
           "<a:warning1:890012010224431144> | An error has occured"
         )
         .setFooter({ text: `You've already been verified!` });
-      return interaction.reply({ embeds: [Error], ephemeral: true });
+      return interaction.followUp({ embeds: [Error], ephemeral: true });
     }
 
     // Create modal

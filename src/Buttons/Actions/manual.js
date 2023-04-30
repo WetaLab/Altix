@@ -17,7 +17,7 @@ module.exports = {
       .get(ticket_id);
 
     if (!ticket) {
-      return interaction.reply({
+      return interaction.followUp({
         content: "Ticket no longer exists.",
         ephemeral: true,
       });
@@ -32,7 +32,7 @@ module.exports = {
     // Add the moderator to the ticket & thread
     let user = client.users.fetch(ticket.userid).then(async (user) => {
       if (!user) {
-        return interaction.reply({
+        return interaction.followUp({
           content: "User no longer exists.",
           ephemeral: true,
         });
@@ -104,7 +104,7 @@ module.exports = {
             ephemeral: true,
           });
         } else {
-          return interaction.reply({
+          return interaction.followUp({
             content: "Thread no longer exists.",
             ephemeral: true,
           });
