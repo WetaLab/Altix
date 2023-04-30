@@ -109,7 +109,7 @@ module.exports = {
       components: [row],
     });
 
-    interaction.deferUpdate();
+    // interaction.deferUpdate();
 
     // Check if ticket is still in the database, if so delete it
     const ticket = client.database
