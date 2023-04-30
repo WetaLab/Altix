@@ -98,7 +98,7 @@ module.exports = {
           });
           thread.members.add(interaction.member.id);
 
-          await interaction.deferReply({ephemeral: true});
+          // await interaction.deferReply({ephemeral: true});
           interaction.followUp({
             content: "You have been added to the thread. " + thread.toString(),
             ephemeral: true,
