@@ -366,7 +366,7 @@ WHERE
               interaction.channel.delete();
             });
         });
-      return interaction.deferUpdate();
+      //return interaction.deferUpdate();
     }
   },
 };
