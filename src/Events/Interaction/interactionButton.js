@@ -57,7 +57,9 @@ module.exports = {
           interaction.reply({
             content: "A critical error has occured while running this action.",
             ephemeral: true,
-          });
+          }).catch(() => {
+            console.log("Failed to send error message")
+          })
         } catch (error) {
           console.log("Failed to send error message", error);
         }
