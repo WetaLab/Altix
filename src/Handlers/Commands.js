@@ -27,7 +27,7 @@ module.exports = (client, Discord) => {
     // Production
     console.log("Registred commands", commands_array);
     rest.put(
-      Routes.applicationCommands(process.env.APPID),
+      Routes.applicationCommands(process.env.ALTIX_APPID),
       { body: commands_array },
     );
 
