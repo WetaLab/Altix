@@ -59,7 +59,7 @@ module.exports = {
 
   async execute(interaction, client) {
     let captcha_correct = interaction.customId.split("-")[1];
-    interaction.deferReply({ ephemeral: true }).catch(() => {});
+    interaction.deferReply({ ephemeral: true }).catch((err) => { console.log("Failed Defer",err) });
     // Check if in thread verification
     let is_thread_verification = false;
     try {
