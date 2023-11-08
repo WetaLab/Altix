@@ -5,20 +5,29 @@ const {
   invalidate_specific_ticket,
 } = require("../../lib/utils.js"); // Load the utils library
 
+const set_presence = (client) => {
+  console.log("Setting bot status.");
+  client.user.setPresence({
+    activities: [
+      {
+        name: `verifications`,
+        type: ActivityType.Watching,
+      },
+    ],
+    status: "online",
+  });
+};
+
 module.exports = {
   name: "ready",
   once: true,
   execute(client) {
     console.log("Client ready for action!");
 
-    client.user.setPresence({
-      activities: [
-        {
-          name: `verifications`,
-          type: ActivityType.Watching,
-        },
-      ],
-      status: "online",
+    set_presence(client);
+
+    client.on("shardReady", () => {
+      set_presence(client);
     });
 
     // Make a resiliency check on active ticket times
