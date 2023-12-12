@@ -168,7 +168,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 7exe - [Static#4371](https://discordapp.com/users/268461151858196480)
 
-Project Link: [https://github.com/7exe/Altix](https://github.com/7exe/Altix)
+Project Link: [https://github.com/WetaLab/Altix](https://github.com/WetaLab/Altix)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
