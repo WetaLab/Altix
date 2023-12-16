@@ -6,7 +6,6 @@ const {
 module.exports = {
   name: "ping",
   description: "Get the statistics of how the bot is doing.",
-  permission: PermissionsBitField.Flags.Administrator,
   ephemeral: false,
   options: [],
   async execute(client, interaction) {
