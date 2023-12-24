@@ -1,19 +1,22 @@
 const { readdirSync } = require("fs");
 const { client, REST, Routes } = require("discordjs-latest");
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-
+const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 module.exports = (client, Discord) => {
   const command_folder = readdirSync("./src/Commands");
   var commands_array = [];
   for (const folder of command_folder) {
-    const command_files = readdirSync(`./src/Commands/${folder}`).filter((files) =>
-      files.endsWith(".js")
+    const command_files = readdirSync(`./src/Commands/${folder}`).filter(
+      (files) => files.endsWith(".js")
     );
     for (const file of command_files) {
       const command = require(`../Commands/${folder}/${file}`);
       client.commands.set(command.name, command);
-      commands_array.push(command);
+      commands_array.push({
+        name: command.name,
+        description: command.description,
+        options: command.options,
+      });
     }
   }
   client.on("ready", () => {
@@ -26,10 +29,8 @@ module.exports = (client, Discord) => {
 
     // Production
     console.log("Registred commands", commands_array);
-    rest.put(
-      Routes.applicationCommands(process.env.ALTIX_APPID),
-      { body: commands_array },
-    );
-
+    rest.put(Routes.applicationCommands(process.env.ALTIX_APPID), {
+      body: commands_array,
+    });
   });
 };
