@@ -248,7 +248,7 @@ VALUES
             let JSON_object = JSON.parse(server_information.questions);
             let thread_embed = new EmbedBuilder()
               .setColor(0x2f3136)
-              .setTitle(interaction.guild.name + "'s Verification Ticket")
+              .setTitle(`Welcome to ${interaction.guild.name}'s Verification`)
               .setFooter({ text: `ID: ${generated_id}` });
 
             if (JSON_object.questions.length > 1) {
@@ -264,7 +264,7 @@ VALUES
             const row = new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId(`proceed-${generated_id}`)
-                .setLabel("Proceed")
+                .setLabel("Continue")
                 .setStyle(ButtonStyle.Success)
             );
 
