@@ -37,11 +37,10 @@ db.prepare(
 CREATE TABLE IF NOT EXISTS verifysettings (
   guildid BLOB PRIMARY KEY, questions STRING, 
   channel BLOB, role STRING, captcha INTEGER,
-  accepted STRING
+  accepted STRING, init STRING
 )
 `
 ).run();
-
 
 db.prepare(
   `

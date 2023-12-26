@@ -27,7 +27,6 @@ const random_id = () => {
   return Math.floor(Math.random() * 10000000000000);
 };
 
-
 module.exports = {
   id: "verifybutton",
   ephemeral: true,
@@ -239,7 +238,6 @@ VALUES
             type: ChannelType.PrivateThread,
           })
           .then((thread) => {
-
             // Update the thread id in the database
             client.database
               .prepare(`UPDATE tickets SET threadid = ? WHERE tickid = ?`)
@@ -259,6 +257,10 @@ VALUES
               thread_embed.setDescription(
                 `Please answer the following question to verify yourself`
               );
+            }
+
+            if (server_information.init) {
+              thread_embed.setDescription(server_information.init);
             }
 
             const row = new ActionRowBuilder().addComponents(

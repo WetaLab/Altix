@@ -123,7 +123,7 @@ module.exports = {
         let row = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId(`proceed-${ticket_id}`)
-            .setLabel("Proceed")
+            .setLabel("Continue")
             .setDisabled(true)
             .setStyle(ButtonStyle.Success)
         );
