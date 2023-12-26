@@ -233,7 +233,10 @@ module.exports = {
           .then(() => {
             let accept_embed = new EmbedBuilder()
               .setColor(0xffffff)
-              .setDescription(`***Your verification has been accepted!***`)
+              .setDescription(
+                server_information.accepted ||
+                  `***Your verification has been accepted!***`
+              )
               .setAuthor({
                 name: interaction.guild.name,
                 iconURL: interaction.guild.iconURL(),
@@ -251,9 +254,11 @@ module.exports = {
       } else {
         const Error = new EmbedBuilder()
           .setColor(0xffa500)
-          .setDescription("<a:warning1:890012010224431144> | An error has occured")
+          .setDescription(
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
           .setFooter({
-            text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`
+            text: `Uh oh! Seems like the verified role is missing\nYou might want to tell your local server administrators about this!`,
           });
         return interaction.reply({ embeds: [Error], ephemeral: true });
       }
