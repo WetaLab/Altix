@@ -8,10 +8,25 @@ const {
 
 module.exports = {
   name: "message",
-  description:
-    "Sets the message sent to users once their verification ticket has been accepted.",
+  description: "Sets specified message content at specific verification stage",
   permission: PermissionsBitField.Flags.Administrator,
   options: [
+    {
+      name: "selection",
+      description: "The message you want to edit",
+      type: 3,
+      required: true,
+      choices: [
+        {
+          name: "Verification accepted",
+          value: "accepted",
+        },
+        {
+          name: "Initial message",
+          value: "init",
+        },
+      ],
+    },
     {
       name: "content",
       description:
@@ -27,6 +42,8 @@ module.exports = {
     const custom_content = interaction.options
       .getString("content")
       .replace(regex_to_replace, "\n");
+
+    const selection = interaction.options.get("selection");
 
     let server_information = client.database
       .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)
@@ -46,13 +63,13 @@ module.exports = {
       });
     }
 
-    client.database
-      .prepare(`UPDATE verifysettings SET accepted = ? WHERE guildid = ?`)
+    client.database                       // This is iffy
+      .prepare(`UPDATE verifysettings SET ${selection.value} = ? WHERE guildid = ?`)
       .run(custom_content, interaction.guild.id.toString());
     let Response = new EmbedBuilder()
       .setColor(0xffffff)
       .setDescription(
-        `<a:success:884527566688509982> | The accepted message has been updated!`
+        `<a:success:884527566688509982> | The \`${selection.value}\` message has been updated!`
       );
     return interaction.followUp({
       embeds: [Response],
