@@ -46,6 +46,12 @@ module.exports = {
         ephemeral: true,
       });
     }
+    
+
+    // Do this as fast as possible
+    client.database
+          .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
+          .run(ticket_id);
 
     let server_information = client.database
       .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)
@@ -134,9 +140,6 @@ module.exports = {
           .catch(() => {});
         //interaction.reply();
         interaction.deferUpdate();
-        client.database
-          .prepare(`UPDATE tickets SET io = 1, active = 1 WHERE tickid = ?`)
-          .run(ticket_id);
 
         // Setup time limit for 15/30 minutes
         setTimeout(
