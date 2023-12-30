@@ -49,7 +49,7 @@ module.exports = {
     try {
       await Button.execute(interaction, client);
     } catch (error) {
-      console.log(error);
+      console.log("ERROR", error);
       if (Button.rollback) {
         Button.rollback(client, interaction, error);
       } else {
