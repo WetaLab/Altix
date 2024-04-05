@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "^1.1.0-dev.1658102994-dda2895",
+    "@discordjs/rest": "^1.7.1",
     "@types/node": "^18.0.6",
     "better-sqlite3": "^7.6.2",
     "captcha-canvas": "^3.1.0",
-    "discordjs-latest": "npm:discord.js@14.8.0",
+    "discordjs-latest": "npm:discord.js@14.14.1",
     "node-fetch": "^3.2.6"
   }
 }
