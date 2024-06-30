@@ -132,7 +132,7 @@ WHERE
             );
         }
         await interaction.followUp({
-          message:
+          content:
             "Your Altix setup has been completed! Review the other slash commands to personalize your verification process.",
           ephemeral: true,
         });
