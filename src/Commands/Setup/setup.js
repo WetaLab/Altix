@@ -18,6 +18,7 @@ module.exports = {
   name: "setup",
   description: "Create a new verification process",
   permission: PermissionsBitField.Flags.Administrator,
+  ephemeral: true,
   options: [
     {
       name: "content",
