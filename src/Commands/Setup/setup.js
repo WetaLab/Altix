@@ -12,6 +12,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
 } = require("discordjs-latest");
+const { ephemeral } = require("../../Buttons/Thread/proceed");
 
 module.exports = {
   name: "setup",
@@ -89,12 +90,12 @@ WHERE
       title: `${interaction.guild.name} Verification`,
       description: custom_content.replace(regex_to_replace, "\n"),
     };
-    let sent_reply = await interaction
-      .followUp({
+    let sent_reply = await interaction.channel
+      .send({
         embeds: [Response],
         components: [row],
       })
-      .then((sent) => {
+      .then(async (sent) => {
         // Add to database
         if (database_operation == 0) {
           client.database
@@ -130,6 +131,11 @@ WHERE
               interaction.guild.id.toString()
             );
         }
+        await interaction.followUp({
+          message:
+            "Your Altix setup has been completed! Review the other slash commands to personalize your verification process.",
+          ephemeral: true,
+        });
       });
   },
 };
