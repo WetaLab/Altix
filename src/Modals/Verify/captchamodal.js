@@ -3,6 +3,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  AttachmentBuilder,
 } = require("discordjs-latest");
 
 const { writeFileSync, unlinkSync } = require("fs");
@@ -16,6 +17,7 @@ module.exports = {
 
   // Rollback incase of error
   async rollback(client, interaction, error) {
+    console.log("Rollback logged");
     // Delete the captcha if possible
     let captcha_correct = interaction.customId.split("-")[1];
     client.database
@@ -50,16 +52,25 @@ module.exports = {
           }`,
         });
 
-      return interaction.followUp({
-        embeds: [error_embed],
-        ephemeral: true,
-      });
+      return interaction
+        .followUp({
+          embeds: [error_embed],
+          ephemeral: true,
+        })
+        .catch((e) => {
+          return interaction.reply({
+            embeds: [error_embed],
+            ephemeral: true,
+          });
+        });
     }
   },
 
   async execute(interaction, client) {
     let captcha_correct = interaction.customId.split("-")[1];
-    interaction.deferReply({ ephemeral: true }).catch((err) => { console.log("Failed Defer",err) });
+    await interaction.deferReply({ ephemeral: false }).catch((err) => {
+      console.log("Failed Defer", err);
+    });
     // Check if in thread verification
     let is_thread_verification = false;
     try {
@@ -130,14 +141,17 @@ module.exports = {
       captcha.addDecoy(); //Add decoy text on captcha canvas.
       captcha.drawTrace(); //draw trace lines on captcha canvas.
       captcha.drawCaptcha();
-      await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
+      const attachment = new AttachmentBuilder(captcha.png, {
+        name: "captcha.png",
+      });
+
       let embed = new EmbedBuilder()
         .setColor(0xffa500)
         .setTitle("Captcha")
         .setDescription(
           `***Answer Incorrect***\nThe answer you provided was incorrect. Please try again.`
         )
-        .setImage(`attachment://captcha_${captcha.text}.png`);
+        .setImage(`attachment://captcha.png`);
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -145,6 +159,32 @@ module.exports = {
           .setLabel("Answer")
           .setStyle(ButtonStyle.Success)
       );
+
+      setTimeout(
+        invalidate_captcha,
+        30000,
+        client,
+        interaction,
+        interaction.member.id,
+        interaction.guild.id,
+        captcha.text
+      );
+
+      await interaction
+        .followUp({
+          files: [attachment],
+          embeds: [embed],
+          ephemeral: false,
+          components: [row],
+        })
+        .catch(async (e) => {
+          await interaction.reply({
+            files: [attachment],
+            embeds: [embed],
+            ephemeral: false,
+            components: [row],
+          });
+        });
 
       client.database
         .prepare(
@@ -158,28 +198,24 @@ module.exports = {
           captcha.text
         );
 
-      setTimeout(
-        invalidate_captcha,
-        30000,
-        client,
-        interaction,
-        interaction.member.id,
-        interaction.guild.id,
-        captcha.text
+      return;
+    }
+
+    let passed = new EmbedBuilder()
+      .setColor(0x39FF14)
+      .setDescription(
+        `<a:checkitycheck:1261694974299209849> Captcha test passed!`
       );
 
-      return interaction
-        .followUp({
-          files: [`./captcha_${captcha.text}.png`],
-          embeds: [embed],
-          ephemeral: true,
-          components: [row],
-        })
-        .then(() => {
-          // Delete the captcha file
-          unlinkSync(`./captcha_${captcha.text}.png`);
+    await interaction
+      .followUp({
+        embeds: [passed],
+      })
+      .catch(async (e) => {
+        await interaction.reply({
+          embeds: [passed],
         });
-    }
+      });
 
     let server_information = client.database
       .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)

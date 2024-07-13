@@ -4,7 +4,13 @@ const {
   TextInputBuilder,
   TextInputStyle,
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  AttachmentBuilder,
 } = require("discordjs-latest");
+
+const { Captcha } = require("captcha-canvas");
+const { invalidate_captcha } = require("../../lib/utils.js"); // Load the utils library
 
 module.exports = {
   id: "captchabutton",
@@ -15,6 +21,7 @@ module.exports = {
     let server_information = client.database
       .prepare(`SELECT * FROM verifysettings WHERE guildid = ?`)
       .get(interaction.guild.id.toString());
+
     if (!server_information) {
       let Error = new EmbedBuilder()
         .setColor(0xffa500)
@@ -41,18 +48,102 @@ module.exports = {
         captcha_answer.toUpperCase()
       );
     if (!captcha) {
-      let Error = new EmbedBuilder()
-        .setColor(0xffa500)
-        .setDescription(
-          "<a:warning1:890012010224431144> | An error has occured"
-        )
-        .setFooter({
-          text: `The captcha you entered is invalid!`,
+      // Check if there are any other valid captchas
+      let other_captcha = client.database
+        .prepare(`SELECT * FROM captcha WHERE guildid = ? AND userid = ?`)
+        .get(interaction.guild.id.toString(), interaction.member.id.toString());
+
+      if (!other_captcha) {
+        // Generate a new captcha if no other valid captchas exist
+        const captcha = new Captcha();
+        captcha.async = false;
+        captcha.addDecoy(); // Add decoy text on captcha canvas
+        captcha.drawTrace(); // Draw trace lines on captcha canvas
+        captcha.drawCaptcha();
+        const attachment = new AttachmentBuilder(captcha.png, {
+          name: "captcha.png",
         });
-      return interaction.followUp({
-        embeds: [Error],
-        ephemeral: true,
-      });
+
+        let embed = new EmbedBuilder()
+          .setColor(0xffa500)
+          .setDescription(
+            `***New Captcha Generated***\nPlease answer the captcha below.`
+          )
+          .setImage(`attachment://captcha.png`);
+
+        const row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`captchabutton-${captcha.text}`)
+            .setLabel("Answer")
+            .setStyle(ButtonStyle.Success)
+        );
+
+        client.database
+          .prepare(
+            `
+            INSERT INTO captcha (userid, guildid, text) VALUES (?, ?, ?)
+            `
+          )
+          .run(
+            interaction.member.id.toString(),
+            interaction.guild.id.toString(),
+            captcha.text
+          );
+
+        setTimeout(
+          invalidate_captcha,
+          30000,
+          client,
+          interaction,
+          interaction.member.id,
+          interaction.guild.id,
+          captcha.text
+        );
+
+        // Edit the old captcha message to disable the button
+        let row_old = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`invalid-do-not-use`)
+            .setLabel("Answer")
+            .setDisabled(true)
+            .setStyle(ButtonStyle.Success)
+        );
+        await interaction.message.edit({
+          components: [row_old],
+        });
+
+        return interaction.followUp({
+          files: [attachment],
+          embeds: [embed],
+          components: [row],
+        }).catch(e => {
+          return interaction.reply({
+            files: [attachment],
+            embeds: [embed],
+            components: [row],
+          })
+        })
+      } else {
+        let Error = new EmbedBuilder()
+          .setColor(0xffa500)
+          .setDescription(
+            "<a:warning1:890012010224431144> | An error has occured"
+          )
+          .setFooter({
+            text: `The captcha you entered is invalid!`,
+          });
+        return interaction
+          .followUp({
+            embeds: [Error],
+            ephemeral: true,
+          })
+          .catch((e) => {
+            return interaction.reply({
+              embeds: [Error],
+              ephemeral: true,
+            });
+          });
+      }
     }
 
     // Check if they've already been verified
@@ -84,7 +175,8 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(textInput);
     modal.addComponents(row);
 
-    await interaction.showModal(modal).catch((err) => {console.log(err)});
-    // interaction.deferUpdate().catch(() => {});
+    await interaction.showModal(modal).catch((err) => {
+      console.log(err);
+    });
   },
 };

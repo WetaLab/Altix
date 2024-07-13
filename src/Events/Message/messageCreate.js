@@ -14,6 +14,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  AttachmentBuilder
 } = require("discordjs-latest");
 
 const { sanitize_string } = require("../../lib/utils.js"); // Load the utils library
@@ -144,7 +145,9 @@ WHERE
         captcha.addDecoy(); //Add decoy text on captcha canvas.
         captcha.drawTrace(); //draw trace lines on captcha canvas.
         captcha.drawCaptcha();
-        await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
+        const attachment = new AttachmentBuilder(captcha.png, {
+          name: "captcha.png"
+        });
 
         // Add captcha to the database
         client.database
@@ -166,7 +169,7 @@ WHERE
           .setDescription(
             "*This server requires you to complete a captcha to proceed*"
           )
-          .setImage(`attachment://captcha_${captcha.text}.png`);
+          .setImage(`attachment://captcha.png`);
 
         // Create answer button
         const row = new ActionRowBuilder().addComponents(
@@ -179,13 +182,9 @@ WHERE
         return await message.channel
           .send({
             embeds: [embed],
-            files: [`./captcha_${captcha.text}.png`],
+            files: [attachment],
             components: [row],
           })
-          .then(() => {
-            // Delete the captcha file
-            unlinkSync(`./captcha_${captcha.text}.png`);
-          });
       } else {
         client.database
           .prepare(

@@ -15,6 +15,7 @@ const {
   ButtonStyle,
   ChannelType,
   Embed,
+  AttachmentBuilder
 } = require("discordjs-latest");
 
 const { writeFileSync, unlinkSync } = require("fs");
@@ -135,6 +136,16 @@ WHERE tickid = ?
                   `
                 )
                 .run(ticket.tickid);
+
+              client.database
+                .prepare(
+                  `
+                DELETE FROM captcha WHERE userid = ? AND guildid = ?`
+                )
+                .run(
+                  interaction.member.id.toString(),
+                  interaction.guild.id.toString()
+                );
 
               ticket = null;
             }
@@ -333,6 +344,10 @@ VALUES
           captcha.drawTrace(); //draw trace lines on captcha canvas.
           captcha.drawCaptcha();
 
+          const attachment = new AttachmentBuilder(captcha.png, {
+            name: "captcha.png",
+          });
+
           // Save the captcha in the database
           client.database
             .prepare(
@@ -347,7 +362,6 @@ VALUES
               interaction.guild.id.toString()
             );
 
-          await writeFileSync(`./captcha_${captcha.text}.png`, captcha.png);
 
           const embed = new EmbedBuilder()
             .setColor(0xffa500)
@@ -355,7 +369,7 @@ VALUES
             .setDescription(
               "*This server requires you to complete a captcha to verify yourself*"
             )
-            .setImage(`attachment://captcha_${captcha.text}.png`);
+            .setImage(`attachment://captcha.png`);
 
           // Create answer button
           const row = new ActionRowBuilder().addComponents(
@@ -368,13 +382,11 @@ VALUES
           return await interaction
             .followUp({
               embeds: [embed],
-              files: [`./captcha_${captcha.text}.png`],
+              files: [attachment],
               ephemeral: true,
               components: [row],
             })
             .then(() => {
-              // Delete the captcha file
-              unlinkSync(`./captcha_${captcha.text}.png`);
               // Set time
               /*
               This is not resilient, and needs to be improved in the future for scalability.
