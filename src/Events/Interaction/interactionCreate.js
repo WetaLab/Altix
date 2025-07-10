@@ -8,6 +8,7 @@ module.exports = {
 
   async execute(interaction, client) {
     if (interaction.isChatInputCommand()) {
+      if (interaction.channel?.isDMBased()) return;
       const command = client.commands.get(interaction.commandName);
 
       if (command) {
@@ -32,7 +33,9 @@ module.exports = {
         if (command.ephemeral) {
           await interaction.deferReply({ ephemeral: true }).catch(() => {});
         } else {
-          await interaction.deferReply({ ephemeral: false }).catch(() => {});
+          if (command.nodefer != true) {
+            await interaction.deferReply({ ephemeral: false }).catch(() => {});
+          }
         }
       }
 
@@ -52,12 +55,15 @@ module.exports = {
           command.rollback(client, interaction, error);
         } else {
           try {
-            interaction.reply({
-              content: "A critical error has occured while running this action.",
-              ephemeral: true,
-            }).catch(() => {
-              console.log("Failed to send error message")
-            })
+            interaction
+              .reply({
+                content:
+                  "A critical error has occured while running this action.",
+                ephemeral: true,
+              })
+              .catch(() => {
+                console.log("Failed to send error message");
+              });
           } catch (error) {
             console.log("Failed to send error message", error);
           }
